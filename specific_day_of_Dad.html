@@ -1,0 +1,68 @@
+<html>  
+<head>  
+<meta  http-equiv="Content-Type"  content="text/html;  charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">  
+<title>老爸某天的上班状态</title>  
+</head>  
+
+<body>  
+
+
+
+<script  language="JavaScript">  
+	
+	
+	function calculate(){
+	输入日期=document.getElementById('n1').value;
+	加时间的输入日期=输入日期+" "+"24:00:00"
+	转换为标准时间格式=new Date(加时间的输入日期)
+	输入日期的毫秒数=转换为标准时间格式.getTime()
+	//document.write(输入日期的毫秒数);
+	
+	
+	上班的一天="2018-11-07"
+	加时间的上班的一天的时间格式=上班的一天+" "+"24:00:00"
+	上班的一天转换为时间格式=new Date(加时间的上班的一天的时间格式)
+	上班的一天的毫秒数=上班的一天转换为时间格式.getTime()
+	//document.write(上班的一天的毫秒数)
+	
+	两个相差的毫秒数=Math.abs(输入日期的毫秒数-上班的一天的毫秒数)
+	两个相差的天数=(两个相差的毫秒数/1000/60/60/24)
+	相差的天数被循环后=两个相差的天数%4
+	//document.write(相差的天数被循环后)
+	
+	
+	
+	
+	
+	
+	switch (相差的天数被循环后){
+		case 0:
+			document.write("当天上班")
+			break;
+		case 1:
+			document.write("昨天上班")
+			break;
+		case 2:
+			document.write("前天上班")
+			break;
+		case 3:
+			document.write("大前天上班")
+			break;
+		
+		
+		}
+	
+	}
+
+
+</script>
+
+
+请输入要计算的日期（格式：2018-01-21，注：月份和天数必须两位）:<input type="text"  id="n1">
+<button  onclick="calculate()">提交</button><br>
+
+
+</body>
+
+</html>
