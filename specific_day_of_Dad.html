@@ -14,14 +14,14 @@
 	
 	function calculate(){
 	输入日期=document.getElementById('n1').value;
-	加时间的输入日期=输入日期+" "+"24:00:00"
+	加时间的输入日期=输入日期+" "+"00:00:00"
 	转换为标准时间格式=new Date(加时间的输入日期)
 	输入日期的毫秒数=转换为标准时间格式.getTime()
 	//document.write(输入日期的毫秒数);
 	
 	
 	上班的一天="2018-11-07"
-	加时间的上班的一天的时间格式=上班的一天+" "+"24:00:00"
+	加时间的上班的一天的时间格式=上班的一天+" "+"00:00:00"
 	上班的一天转换为时间格式=new Date(加时间的上班的一天的时间格式)
 	上班的一天的毫秒数=上班的一天转换为时间格式.getTime()
 	//document.write(上班的一天的毫秒数)
@@ -31,6 +31,20 @@
 	相差的天数被循环后=两个相差的天数%4
 	//document.write(相差的天数被循环后)
 	
+	偏移毫秒数=相差的天数被循环后*24*60*60*1000
+	上班那天的毫秒数=输入日期的毫秒数-偏移毫秒数
+	上班那天=new Date()
+	上班那天.setTime(上班那天的毫秒数)
+	//document.write(上班那天)
+	
+	
+	//上班那天转为普通格式
+	年=上班那天.getFullYear()+'-'
+	月=上班那天.getMonth()+1+'-'
+	日=上班那天.getDate()
+	上班那天普通格式=年+月+日
+	//	document.write(上班那天普通格式)
+	
 	
 	
 	
@@ -38,16 +52,16 @@
 	
 	switch (相差的天数被循环后){
 		case 0:
-			document.write("当天上班")
+			document.write("当天上班  您输入的日期为"+输入日期)
 			break;
 		case 1:
-			document.write("昨天上班")
+			document.write("昨天"+上班那天普通格式+"上班  您输入的日期为"+输入日期)
 			break;
 		case 2:
-			document.write("前天上班")
+			document.write("前天"+上班那天普通格式+"上班  您输入的日期为"+输入日期)
 			break;
 		case 3:
-			document.write("大前天上班")
+			document.write("大前天"+上班那天普通格式+"上班  您输入的日期为"+输入日期)
 			break;
 		
 		
