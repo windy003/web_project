@@ -75,8 +75,9 @@
 </script>
 
 
-请输入要计算的日期（格式：2018-01-21，注：月份和天数必须两位）:<input type="text"  id="n1">
-<button  onclick="calculate()">提交</button><br>
+请输入要计算的日期（格式：2018-01-21，注：月份和天数必须两位）:<input type="text"  id="n1"  onkeydown = "if (event.keyCode == 13)
+document.getElementById('bt').click()">
+<button  id="bt" onclick="calculate()">提交</button><br>
 
 
 </body>
