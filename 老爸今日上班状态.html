@@ -1,0 +1,39 @@
+<html>  
+<head>  
+<meta  http-equiv="Content-Type"  content="text/html;  charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">  
+<title>老爸今日上班状态</title>  
+</head>  
+
+<body>  
+  
+
+
+<script  language="JavaScript">  
+	机器设定到现在的毫秒数=new Date().getTime();//从1970-1-1到现在的毫秒数
+	上班的某天毫秒数=new Date("August 1,2020 24:00:00").getTime()
+	相减获得的天数=(机器设定到现在的毫秒数-上班的某天毫秒数)/1000/60/60/24
+	相减获得的天数模三=相减获得的天数%3
+	
+	//document.write(相减获得的天数模三);
+	switch(true){
+		case  相减获得的天数模三 < 1:
+			document.write("昨天上班，今天休息，后天上班")
+			break;	
+		
+		case  (相减获得的天数模三  >1 &&  相减获得的天数模三<2):
+			document.write("昨天休息，今天休息，明天上班")
+			break;
+		
+		case  相减获得的天数模三 > 2:
+			document.write("昨天休息，今天上班，明天休息，")
+			break;
+	
+	}
+</script>
+
+
+
+
+</body>
+</html>

@@ -5,7 +5,7 @@
 <title>老爸某天的上班状态</title>  
 </head>  
 
-<body>  
+<body  onload="document.getElementById('n1').focus();" >  
 
 
 
@@ -22,7 +22,7 @@
 	//document.write(输入日期的毫秒数);
 	
 	
-	上班的一天="2018-11-07"
+	上班的一天="2020-08-01"
 	加时间的上班的一天的时间格式=上班的一天+" "+"00:00:00"
 	上班的一天转换为时间格式=new Date(加时间的上班的一天的时间格式)
 	上班的一天的毫秒数=上班的一天转换为时间格式.getTime()
@@ -30,10 +30,10 @@
 	
 	两个相差的毫秒数=(输入日期的毫秒数-上班的一天的毫秒数)
 	两个相差的天数=(两个相差的毫秒数/1000/60/60/24)
-	相差的天数被循环后=两个相差的天数%4
+	相差的天数被模三后=两个相差的天数%3
 	//document.write(相差的天数被循环后)
 	
-	偏移毫秒数=相差的天数被循环后*24*60*60*1000
+	偏移毫秒数=相差的天数被模三后*24*60*60*1000
 	上班那天的毫秒数=输入日期的毫秒数-偏移毫秒数
 	上班那天=new Date()
 	上班那天.setTime(上班那天的毫秒数)
@@ -52,7 +52,7 @@
 	
 	
 	
-	switch (相差的天数被循环后){
+	switch (相差的天数被模三后){
 		case 0:
 			document.write("当天上班  您输入的日期为"+输入日期)
 			break;
@@ -61,9 +61,6 @@
 			break;
 		case 2:
 			document.write("前天"+上班那天普通格式+"上班  您输入的日期为"+输入日期)
-			break;
-		case 3:
-			document.write("大前天"+上班那天普通格式+"上班  您输入的日期为"+输入日期)
 			break;
 		
 		
@@ -75,8 +72,7 @@
 </script>
 
 
-请输入要计算的日期（格式：2018-01-21，注：月份和天数必须两位）:<input type="text"  id="n1"  onkeydown = "if (event.keyCode == 13)
-document.getElementById('bt').click()">
+请输入要计算的日期（格式：2018-01-21，注：月份和天数必须两位）:<input type="text"  id="n1"  onkeydown = "if (event.keyCode == 13)document.getElementById('bt').click()">
 <button  id="bt" onclick="calculate()">提交</button><br>
 
 

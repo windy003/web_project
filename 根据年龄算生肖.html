@@ -1,0 +1,57 @@
+<html>  
+<head>  
+<meta  http-equiv="Content-Type"  content="text/html;  charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">  
+<title>根据年龄计算生肖</title>  
+</head>  
+
+<body  onload="document.getElementById('n1').focus();" >  
+
+
+<script  language="JavaScript">  
+
+
+function calculate(){
+
+
+十二生肖数组=["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"]
+
+获取日期=new Date
+当年年份=获取日期.getFullYear()
+
+
+输入的数据=document.getElementById('n1').value
+//document.write(输入的数据.length)
+
+	switch(输入的数据.length){
+		case 4:
+			//document.write(4);
+			出生年份=输入的数据;
+			相减后取模=(出生年份-1864)%12
+			用户的生肖=十二生肖数组[相减后取模]
+			document.write(用户的生肖);
+			break;
+	
+		case 2:
+			出生年份=当年年份-输入的数据;
+			相减后取模=(出生年份-1864)%12
+			用户的生肖=十二生肖数组[相减后取模]
+			document.write(用户的生肖);
+			break;
+	}			
+}
+
+//属鼠的某一出生年=1864  距现在156年
+
+
+
+
+
+</script>
+
+请输入年龄或者出生年份:<input name=b type="text"   id="n1" onkeydown = "if (event.keyCode == 13) document.getElementById('bt').click()">
+<button  id="bt" onclick="calculate()">提交</button><br>
+
+
+</body>
+</html>

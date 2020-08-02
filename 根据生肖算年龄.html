@@ -5,7 +5,8 @@
 <title>根据生肖计算年龄</title>  
 </head>  
 
-<body>  
+<body  onload="document.getElementById('n1').focus();" >  
+
 <script  language="JavaScript">  
 
 function calculate(){
@@ -15,16 +16,17 @@ function calculate(){
 属鼠的某一出生年=1984
 
 偏移度=十二生肖数组.indexOf(输入的生肖)
-输入生肖附近的出生年份=属鼠的某一出生年+偏移度
+//document.write(偏移度)
+输入生肖的出生年份=属鼠的某一出生年+偏移度
 
 
-输入生肖附近的出生年份加36=输入生肖附近的出生年份+36
+输入生肖的出生年份加36=输入生肖的出生年份+36
 
 获取日期=new Date
 当年年份=获取日期.getFullYear()
 
 
-for (匹配生肖的出生日期=输入生肖附近的出生年份加36;匹配生肖的出生日期>1890;匹配生肖的出生日期=匹配生肖的出生日期-12)
+for (匹配生肖的出生日期=输入生肖的出生年份加36;匹配生肖的出生日期>1890;匹配生肖的出生日期=匹配生肖的出生日期-12)
 { 
     document.write(匹配生肖的出生日期+"&nbsp;"+(当年年份-匹配生肖的出生日期+1) +"<br>");
 }
@@ -33,8 +35,7 @@ for (匹配生肖的出生日期=输入生肖附近的出生年份加36;匹配�
 
 </script>
 
-请输入生肖,（如:鼠、牛、虎、兔、龙、蛇、马、羊、猴、鸡、狗、猪）:<input type="text"   id="n1" onkeydown = "if (event.keyCode == 13)
-document.getElementById('bt').click()">
+请输入生肖,（如:鼠、牛、虎、兔、龙、蛇、马、羊、猴、鸡、狗、猪）:<input type="text"   id="n1" onkeydown = "if (event.keyCode == 13) document.getElementById('bt').click()">
 <button  id="bt" onclick="calculate()">提交</button><br>
 
 
