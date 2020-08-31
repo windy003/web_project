@@ -1,0 +1,26 @@
+<html>  
+<head>  
+<meta  http-equiv="Content-Type"  content="text/html;  charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">  
+<title>显示隐藏图片</title>  
+</head>
+<body>
+<button  id="btn">隐藏</button>
+<br>
+ <img src="1.jfif"  id="new">
+ <script  type="text/javascript">
+	obtn=document.getElementById('btn');
+	newImg=document.getElementsByTagName('img')[0];
+	
+	obtn.onclick=function(){
+			if(obtn.innerHTML==='隐藏'){
+				newImg.style.display='none';
+				obtn.innerHTML='显示';
+			}else{
+				newImg.style.display='block';
+				obtn.innerHTML='隐藏';
+			}
+	}
+ </script>
+</body>
+</html>
