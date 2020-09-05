@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>自动播放图片</title>
+        <script>
+            function rollback(){
+                setInterval("rollImg()",2000);
+            }
+
+            var i = 1;
+            function rollImg(){
+                i++;
+                if(i == 5){
+                    i = 1;
+                }
+                var img_id = document.getElementById("img_id");
+                img_id.src = i+".jfif"
+            }
+        </script>
+    </head>
+    <body onload="rollback()">
+                <img src="3.jfif" id="img_id"/>
+    </body>
+</html>
