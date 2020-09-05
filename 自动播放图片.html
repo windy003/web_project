@@ -1,24 +1,26 @@
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>自动播放图片</title>
-        <script>
-            function rollback(){
-                setInterval("rollImg()",2000);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动播放图片</title>
+    <script>
+        
+        function 函数1(){
+            setInterval("函数2()",2000)
+        }
+        i=1
+        function 函数2(){
+            if(i == 4){
+                i=1
             }
-
-            var i = 1;
-            function rollImg(){
-                i++;
-                if(i == 5){
-                    i = 1;
-                }
-                var img_id = document.getElementById("img_id");
-                img_id.src = "图片/"+i+".jfif"
-            }
-        </script>
-    </head>
-    <body onload="rollback()">
-                <img src="图片/3.jfif" id="img_id"/>
-    </body>
+            i++
+            图片对象=document.getElementById("图片")
+            图片对象.src="图片/"+i+".jfif"
+        }
+    </script>
+</head>
+<body onload="函数1()">
+    <img src="图片/1.jfif" alt="" id="图片">
+</body>
 </html>
