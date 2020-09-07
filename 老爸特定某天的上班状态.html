@@ -3,62 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>计算老爸某天的上班状态</title>
+    <title>老爸某天的上班状态</title>
 </head>
-<body onload=document.getElementById('in').focus()>
+<body onload="document.getElementById('输入框').focus()">
     <script>
         function 函数(){
-        //获得输入日期的毫秒数
-        输入的日期=document.getElementById('in').value
-        // document.write(输入的日期)
-        输入日期的毫秒数=new Date(输入的日期+" 00:00:00").getTime()
-        // document.write(输入日期的毫秒数)       
+        输入框对象=document.getElementById("输入框")
+        按钮对象=document.getElementById("按钮")
+        输入的内容=输入框对象.value
+        // document.write(输入的内容)
+
+        //输入日期的毫秒数及上班某天的毫秒数及毫秒数之差以及天数之差，及天数之差模三
+        输入日期的毫秒数=new Date(输入的内容+" 00:00:00").getTime()
+        上班某天的毫秒数=new Date("2020-08-01 00:00:00").getTime()
+        毫秒数之差=输入日期的毫秒数-上班某天的毫秒数
+        天数之差=毫秒数之差/1000/60/60/24
+        天数之差模三=天数之差%3
+
+        //计算出偏移毫秒数及所求日期附近的上班那天，计算出附近上班那天的标准日期格式
+        偏移毫秒数=天数之差模三*1000*60*60*24
+        附近上班那天的毫秒数=输入日期的毫秒数-偏移毫秒数
+        上班那天的标准日期格式=new Date()
+        上班那天的标准日期格式.setTime(附近上班那天的毫秒数)
+        // document.write(上班那天的标准日期格式)
+
+        //附近上班那天的普通格式
+        附近上班那天的普通格式=上班那天的标准日期格式.getFullYear()+(上班那天的标准日期格式.getMonth()+1)+"-"+上班那天的标准日期格式.getDate()
 
 
-        //得到上班某天的毫秒数
-        上班某天的毫秒数 = new Date("2020-08-01 00:00:00").getTime()
-        // document.write(上班某天的毫秒数)
-        
-        //计算出两天相差的毫秒数，天数，以及天数模3后的结果
-        两天相差的毫秒数=输入日期的毫秒数-上班某天的毫秒数
-        两天相差的天数=两天相差的毫秒数/1000/60/60/24
-        天数模三=两天相差的天数%3
-        //document.write(天数模三)
-
-
-        //计算出偏移毫秒数，计算出上班那天的毫秒数和标准格式
-        偏移毫秒数=天数模三*24*60*60*1000
-        上班那天的毫秒数=输入日期的毫秒数-偏移毫秒数
-        上班那天=new Date()
-        上班那天.setTime(上班那天的毫秒数)
-        // document.write(上班那天)
-
-        //上班那天转为普通格式
-        上班那天的普通格式=上班那天.getFullYear()+'-'+(上班那天.getMonth()+1)+'-'+上班那天.getDate()
-        // document.write(上班那天的普通格式)
-
-        
-        
-        
-        switch (天数模三){
+        //根据天数之差模三判断
+        switch(天数之差模三){
             case 0:
-                document.write("当天上班  您输入的日期为"+输入的日期)
+                document.write("当天上班  您输入的日期为"+输入的内容)
                 break
+
             case 1:
-                document.write("昨天"+上班那天的普通格式+"您输入的日期为"+输入的日期)
+                document.write("昨天"+附近上班那天的普通格式+"上班，您输入的日期为"+输入的内容)
                 break
+
             case 2:
-                document.write("前天"+上班那天的普通格式+"您输入的日期为"+输入的日期)
+                document.write("前天"+附近上班那天的普通格式+"上班，您输入的日期为"+输入的内容)
                 break
+
         }
         }
     </script>
-    
-    
-    <p>请输入您要查询的日期，如2020-08-01，注：月份和天数必须两位数</p>
-    <input type="text" name="1  " id="in" onkeydown="if(event.keyCode==13)document.getElementById('bt').click()">
-    <button id="bt" onclick="函数()">提交</button>
-
-    
+    <p>请输入您要查询的日期，如2020-08-01，注：月份和日期必须两位数</p>
+    <input type="" id="输入框" onkeydown="if(event.keyCode==13)document.getElementById('按钮').click()">
+    <button id="按钮" onclick="函数()">提交</button>
 </body>
 </html>
