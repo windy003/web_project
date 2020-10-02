@@ -21,7 +21,7 @@
 
             document.getElementById('结果').innerHTML+='出生年份&nbsp;&nbsp;&nbsp;年龄 <br>'
 
-            for(匹配生肖的出生日期=与输入生肖相同的某年加三十六;匹配生肖的出生日期>1890;匹配生肖的出生日期=匹配生肖的出生日期-12){
+            for(匹配生肖的出生日期=与输入生肖相同的某年加三十六;匹配生肖的出生日期>1890;匹配生肖的出生日期-=12){
                 document.getElementById('结果').innerHTML+=(匹配生肖的出生日期+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+(当年的年份-匹配生肖的出生日期+1)+'<br>')
             }
             document.getElementById('结果').innerHTML+='<br>'
