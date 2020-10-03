@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en,ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多选快与单选快</title>
+    <style>
+        .class1{float: left;margin: 10px;background: red;width:100px;height:100px}
+        .class2{float: left;margin: 10px;background: blue;width:100px;height:100px}
+        #菜单{float:left;}
+    </style>
+    <script>
+        function 函数1(元素) {
+            if (元素.className == 'class1') {
+                元素.className = 'class2';
+            }else{
+                元素.className = 'class1';
+            }
+        }
+
+        function 函数2(元素){
+            菜单元素数组=document.getElementById('菜单').children
+            for(i=0;i<菜单元素数组.length;i++){
+                菜单元素数组[i].className='class1'
+            }
+            元素.className='class2'
+        }
+    </script>
+</head>
+<body>
+    <p>多选块:</p>
+    <div class='class1' onclick="函数1(this)"></div>
+    <div class='class1' onclick="函数1(this)"></div>
+    <div class='class1' onclick="函数1(this)"></div>
+    <div class='class1' onclick="函数1(this)"></div>
+    <br><br><br><br><br>
+    <p>单选块:</p>
+    <div id="菜单">
+        <div class='class2' onclick="函数2(this)"></div>
+        <div class='class1' onclick="函数2(this)"></div>
+        <div class='class1' onclick="函数2(this)"></div>
+        <div class='class1' onclick="函数2(this)"></div>
+    </div>
+</body>
+</html>
