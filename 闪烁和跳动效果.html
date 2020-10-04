@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en,ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闪烁和跳动效果</title>
+    <style>
+        body{background:black; color: white;}
+        
+        .闪烁{
+            animation :infinite 闪烁 linear 1s ;
+        }
+
+        @keyframes 闪烁{
+            0% { opacity: 1; }
+            50% { opacity: .1; }
+            100% { opacity: 1; }
+        }
+        
+        .跳动{
+            animation :infinite 跳动 linear 1s ;
+        }
+
+        @keyframes 跳动{
+            0% { width:200px; }
+            50% { width: 20px; }
+            100% { width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <p class='闪烁'>跳动的文字</p>
+    <img class='跳动' src="图片/爱心.png" alt="">
+</body>
+</html>
