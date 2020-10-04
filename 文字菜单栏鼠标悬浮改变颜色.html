@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en,ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字菜单栏鼠标悬浮改变颜色</title>
+    <style>
+        body{background:yellow;margin: 0px;}
+        div#菜单栏 { 
+            padding:24px;
+            border: red 1px dashed;
+         }
+
+        div#菜单栏 > a{
+            font-size: 17px;
+            background:blue;
+            padding: 12px 24px;
+            color: aqua;
+            margin-right:10px;
+            text-decoration:none;
+            border-radius: 3px;
+            transition: background .5s linear 0s,color .5s linear 0s;
+        }
+        div#菜单栏> a:hover{background: brown;color:black;}
+    </style>
+</head>
+<body>
+    <div id='菜单栏'>
+        <a href="">word1</a>
+        <a href="">word2</a>
+        <a href="">word3</a>
+        <a href="">word4</a>
+    </div>
+</body>
+</html>
