@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en,ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {margin: 0px;background: #000;}
+        #顶部栏{
+            background:linear-gradient(#666,#000)
+            height:60px;
+        }
+        #logo {
+            float: left;
+            width:140px;
+            height: 35px;
+            margin:8px 0px 0px 30px;
+            font-size: 36px;
+            color:#999;
+        }
+        #按钮{
+            float: left;
+            width: 144px;
+            height: 46px;
+            padding-top: 16px;
+        }
+        #面板{
+            position: absolute;
+            height: 0px;
+            width: 550px;
+            background:#000;
+            top:60px;
+            left: 160px;
+            border-radius: 0px 0px 8px 8px;
+            overflow: hidden;
+            z-index: 10000;
+            transition: height .3s linear 0s;
+        }
+        #文字部分{
+            background:#333;
+            padding: 20px;
+            height: 238px;
+            margin: 10px;
+            color:white;
+        }
+    </style>
+    <script>
+        function 函数() {
+            面板对象=document.getElementById('面板')
+            箭头对象=document.getElementById('箭头')
+            if(面板对象.style.height=='300px'){
+                面板对象.style.height='0px'
+                箭头对象.innerHTML='&#9662;'
+            }else{
+                面板对象.style.height='300px'
+                箭头对象.innerHTML='&#9652;'
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id='顶部栏'>
+        <div id='logo'>LOGO</div>
+        <div id='按钮'>
+            <button onclick='函数(面板)'>按钮<span id="箭头">&#9662;</span></button>
+        </div>
+        <div id='面板'>
+            <div id='文字部分'>
+                上帝爱我，我爱上帝！上帝爱我，我爱上帝！上帝爱我，我爱上帝！
+                上帝爱我，我爱上帝！上帝爱我，我爱上帝！上帝爱我，我爱上帝！
+                上帝爱我，我爱上帝！上帝爱我，我爱上帝！上帝爱我，我爱上帝！
+                上帝爱我，我爱上帝！上帝爱我，我爱上帝！
+            </div>
+        </div>
+    </div>
+</body>
+</html>
