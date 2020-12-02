@@ -88,7 +88,7 @@
 
 
           
-          结果对象.innerHTML+="共"+(周末列表.length)+"天:"+周末列表
+          结果对象.innerHTML="共"+(周末列表.length)+"天:"+周末列表
   }
     
  </script>
@@ -105,7 +105,7 @@
   <input id="结束日期" type="text" onkeydown="if(event.keyCode==13)document.getElementById('提交').click()">
   <br><br><br>
   <button id="提交" onclick="函数()">提交</button>
-  <p id="结果">结果:</p>
+  <p id="结果"></p>
   </center>
 </body>
 </html>
