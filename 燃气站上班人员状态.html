@@ -9,7 +9,9 @@
 <body  onload="document.getElementById('输入框').focus()">
 
     <center>
+        昨日上班状态:<div id="昨日状态"></div>
         今日上班状态:<div id="今日状态"></div>
+        明日上班状态:<div id="明日状态"></div>
         <p>请输入您要查询的日期，如2021-12-25，
         注：月份和日期必须两位数,必须是2021-12-24以后</p>
         <input type="" id="输入框" onkeydown="if(event.keyCode==13)document.getElementById('按钮').click()">
@@ -31,24 +33,34 @@
         相减获得的天数=(机器设定到现在的毫秒数-序列一的某天毫秒数)/1000/60/60/24
         相减获得的天数模四=相减获得的天数%4
         console.log(相减获得的天数,相减获得的天数模四)
+        昨日上班对象=document.getElementById("昨日状态")
         今日上班对象=document.getElementById("今日状态")
+        明日上班对象=document.getElementById("明日状态")
 	
         //document.write(相减获得的天数模四);
         switch(true){
             case  相减获得的天数模四 < 1:
+                昨日上班对象.innerHTML =(上班序列.序列四)
                 今日上班对象.innerHTML =(上班序列.序列一)
+                明日上班对象.innerHTML =(上班序列.序列二)
                 break;	
             
             case  相减获得的天数模四  >1 &&  相减获得的天数模四<2:
+                昨日上班对象.innerHTML =(上班序列.序列一)
                 今日上班对象.innerHTML =(上班序列.序列二)
+                明日上班对象.innerHTML =(上班序列.序列三)
                 break;
             
             case  相减获得的天数模四 > 2 &&  相减获得的天数模四<3  :
+                昨日上班对象.innerHTML =(上班序列.序列二)
                 今日上班对象.innerHTML =(上班序列.序列三)
+                明日上班对象.innerHTML =(上班序列.序列四)
                 break;
         
             case  相减获得的天数模四 > 3:
+                昨日上班对象.innerHTML =(上班序列.序列三)
                 今日上班对象.innerHTML =(上班序列.序列四)
+                明日上班对象.innerHTML =(上班序列.序列一)
                 break;
         
         }
