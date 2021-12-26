@@ -16,7 +16,9 @@
         注：月份和日期必须两位数,必须是2021-12-24以后</p>
         <input type="" id="输入框" onkeydown="if(event.keyCode==13)document.getElementById('按钮').click()">
         <button id="按钮" onclick="函数()">提交</button>
-        <p>所查询的上班状态为:<div   id="查询结果"></div></p>
+        <br>
+        <br>
+        <div   id="查询结果"></div>
     </center>
     <script>
 
@@ -82,19 +84,19 @@
 
             switch(true){
                 case  相减获得的天数模四 ==0:
-                    查询结果对象.innerHTML =(上班序列.序列一)
+                    查询结果对象.innerHTML =("所查询的上班状态为:"+上班序列.序列一)
                     break;	
                 
                 case  相减获得的天数模四  ==1:
-                    查询结果对象.innerHTML =(上班序列.序列二)
+                    查询结果对象.innerHTML =("所查询的上班状态为:"+上班序列.序列二)
                     break;
                 
                 case  相减获得的天数模四 ==2:
-                    查询结果对象.innerHTML =(上班序列.序列三)
+                    查询结果对象.innerHTML =("所查询的上班状态为:"+上班序列.序列三)
                     break;
             
                 case  相减获得的天数模四 ==3:
-                    查询结果对象.innerHTML =(上班序列.序列四)
+                    查询结果对象.innerHTML =("所查询的上班状态为:"+上班序列.序列四)
                     break;
             
                 }
