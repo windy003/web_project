@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老爸某天的上班状态</title>
+</head>
+<body onload="document.getElementById('输入框').focus()">
+    <script>
+        function 函数(){
+        输入框对象=document.getElementById("输入框")
+        按钮对象=document.getElementById("按钮")
+        输入的内容=输入框对象.value
+        // document.write(输入的内容)
+
+        //输入日期的毫秒数及上班某天的毫秒数及毫秒数之差以及天数之差，及天数之差模4
+        输入日期的毫秒数=new Date(输入的内容+" 00:00:00").getTime()
+        上班某天的毫秒数=new Date("2023-03-02 00:00:00").getTime()
+        毫秒数之差=输入日期的毫秒数-上班某天的毫秒数
+        天数之差=毫秒数之差/1000/60/60/24
+        天数之差模4=天数之差%4
+
+        //计算出偏移毫秒数及所求日期附近的上班那天，计算出附近上班那天的标准日期格式
+        偏移毫秒数=天数之差模4*1000*60*60*24
+        附近上班那天的毫秒数=输入日期的毫秒数-偏移毫秒数
+        上班那天的标准日期格式=new Date()
+        上班那天的标准日期格式.setTime(附近上班那天的毫秒数)
+        // document.write(上班那天的标准日期格式)
+
+        //附近上班那天的普通格式
+        附近上班那天的普通格式=上班那天的标准日期格式.getFullYear()+'-'+(上班那天的标准日期格式.getMonth()+1)+"-"+上班那天的标准日期格式.getDate()
+
+
+        //根据天数之差模三判断
+        switch(天数之差模4){
+            case 0:
+                document.write("当天上班  您输入的日期为"+输入的内容)
+                break
+
+            case 1:
+                document.write("昨天"+附近上班那天的普通格式+"上班，您输入的日期为"+输入的内容+"上班回来第一天")
+                break
+
+            case 2:
+                document.write("前天"+附近上班那天的普通格式+"上班，您输入的日期为"+输入的内容+"上班回来第二天")
+                break
+            case 3:
+                document.write("前天"+附近上班那天的普通格式+"上班，您输入的日期为"+输入的内容+"上班回来第三天")
+                break
+                
+        }
+        }
+    </script>
+    <p>请输入您要查询的日期，如2020-08-01，注：月份和日期必须两位数,必须是2020-08-01</p>
+    <input type="" id="输入框" onkeydown="if(event.keyCode==13)document.getElementById('按钮').click()">
+    <button id="按钮" onclick="函数()">提交</button>
+</body>
+</html>
