@@ -58,6 +58,9 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+document.getElementById('markTimeButton').addEventListener('click', insertTimestamp);
+
+
 document.getElementById('exportButton').addEventListener('click', function() {
     let lyricsInput = document.getElementById('lyricsInput');
     let lrcContent = lyricsInput.value;
