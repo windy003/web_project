@@ -272,8 +272,11 @@
                     const newActive = lyrics.children[index];
                     if (newActive) {
                         newActive.classList.add('active');
-                        // 滚动到当前歌词
-                        lyrics.scrollTop = newActive.offsetTop - lyrics.offsetTop;
+                        
+                        // 滚动到当前歌词，使其居中
+                        const offset = newActive.offsetTop - lyrics.offsetTop;
+                        const scrollPosition = offset - (lyrics.clientHeight / 2) + (newActive.clientHeight / 2);
+                        lyrics.scrollTop = scrollPosition;
                     }
                     
                     currentIndex = index;
