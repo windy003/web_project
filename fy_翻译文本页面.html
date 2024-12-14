@@ -2,78 +2,30 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文本转换器</title>
+    <title>文本显示器</title>
     <style>
-        body {
-            margin: 20px;
-            font-family: Arial, sans-serif;
-        }
-        #inputArea {
+        textarea {
             width: 90%;
             height: 200px;
             margin-bottom: 20px;
-            padding: 10px;
         }
-        #outputArea {
+        #output {
             width: 90%;
-            margin-top: 20px;
-            line-height: 2.5;
-            padding: 20px;
             border: 1px solid #ccc;
-        }
-        .button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        p {
-            margin: 1em 0;
-            text-align: justify;
-        }
-        /* 添加翻译相关样式 */
-        .immersive-translate-target-wrapper {
-            display: block !important;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
-    <h2>文本转换器</h2>
-    <textarea id="inputArea" placeholder="请在此输入文本..."></textarea>
-    <br>
-    <button class="button" onclick="convertText()">转换</button>
-    <div id="outputArea" class="immersive-translate-target-container" data-immersive-translate-paragraph-id="0"></div>
+    <h2>文本显示器</h2>
+    <textarea id="input" placeholder="请输入文本..."></textarea>
+    <div id="output"></div>
 
     <script>
-        document.getElementById('inputArea').addEventListener('input', function() {
-            convertText();
+        document.getElementById('input').addEventListener('input', function() {
+            const text = this.value;
+            document.getElementById('output').innerText = text;
         });
-
-        function convertText() {
-            const input = document.getElementById('inputArea').value;
-            const output = document.getElementById('outputArea');
-            
-            const paragraphs = input.split(/\n\s*\n/);
-            let paragraphId = 1;
-            
-            const formattedText = paragraphs
-                .filter(p => p.trim() !== '')
-                .map(p => `<p class="immersive-translate-target-translation-theme-paragraph-text" data-immersive-translate-paragraph-id="${paragraphId++}">${p.trim()}</p>`)
-                .join('\n');
-            
-            output.innerHTML = formattedText;
-
-            // 触发多个事件以确保翻译插件能检测到内容变化
-            window.dispatchEvent(new Event('resize'));
-            window.dispatchEvent(new Event('scroll'));
-            document.dispatchEvent(new Event('DOMContentLoaded'));
-        }
     </script>
 </body>
 </html>
