@@ -401,13 +401,6 @@
 
             
 
-            exitButton.onclick = function() {
-                lyrics.classList.remove('fullscreen');
-                toggleButton.style.display = 'block';
-                exitButton.style.display = 'none';
-                playPauseFullscreenButton.style.display = 'none';
-                isFullHeight = false;
-            };
 
             function formatTime(seconds) {
                 const minutes = Math.floor(seconds / 60);
