@@ -399,20 +399,7 @@
                 isFullHeight = false;
             });
 
-            toggleButton.onclick = function() {
-                isFullHeight = !isFullHeight;
-                if (isFullHeight) {
-                    lyrics.classList.add('fullscreen');
-                    toggleButton.style.display = 'none';
-                    exitButton.style.display = 'flex';
-                    playPauseFullscreenButton.style.display = 'flex';
-                } else {
-                    lyrics.classList.remove('fullscreen');
-                    toggleButton.style.display = 'block';
-                    exitButton.style.display = 'none';
-                    playPauseFullscreenButton.style.display = 'none';
-                }
-            };
+            
 
             exitButton.onclick = function() {
                 lyrics.classList.remove('fullscreen');
