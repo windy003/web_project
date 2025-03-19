@@ -126,6 +126,7 @@
         window.onload = function() {
             loadSavedSettings();
             updateStyle();
+            processTextNodesForChinese(document.getElementById('output-text')); // 初始处理
         }
         
         // 加载保存的设置
@@ -183,7 +184,6 @@
             // 更新样式
             outputText.style.fontFamily = fontFamily;
             outputText.style.fontSize = fontSize + 'px';
-            outputText.style.letterSpacing = letterSpacing + 'px';
             outputText.style.lineHeight = lineHeight;
             
             // 更新整个页面的背景颜色
@@ -197,6 +197,52 @@
             
             // 保存设置
             saveSettings();
+            
+            processTextNodesForChinese(outputText); // 处理中文字符
+        }
+        
+        // 处理文本节点以添加字间距到中文字符（对英文无效）
+        function processTextNodesForChinese(element) {
+            // 首先清理所有之前添加的样式
+            cleanupPreviousStyling(element);
+            
+            // 获取当前字间距设置
+            const letterSpacing = document.getElementById('letter-spacing').value;
+            
+            // 获取元素的内容
+            const text = element.innerText;
+            
+            // 清空元素内容
+            element.innerHTML = '';
+            
+            // 使用正则表达式分割中文和非中文
+            const pattern = /([\u4e00-\u9fa5]+)|([^\u4e00-\u9fa5]+)/g;
+            let match;
+            let lastIndex = 0;
+            
+            // 按顺序处理匹配到的中文和非中文部分
+            while ((match = pattern.exec(text)) !== null) {
+                if (match[1]) {
+                    // 匹配到中文部分 - 为每个中文字符创建带字间距的span
+                    const chineseSpan = document.createElement('span');
+                    chineseSpan.style.letterSpacing = letterSpacing + 'px';
+                    chineseSpan.textContent = match[1];
+                    element.appendChild(chineseSpan);
+                } else if (match[2]) {
+                    // 匹配到非中文部分 - 直接添加文本节点（不应用字间距）
+                    const textNode = document.createTextNode(match[2]);
+                    element.appendChild(textNode);
+                }
+            }
+        }
+        
+        // 清理之前应用的所有样式
+        function cleanupPreviousStyling(element) {
+            // 保存原始文本内容
+            const originalText = element.innerText;
+            
+            // 重置元素内容 - 这将移除所有样式
+            element.innerHTML = originalText;
         }
     </script>
 </body>
