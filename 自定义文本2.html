@@ -598,6 +598,8 @@
             textInput.addEventListener('input', function() {
                 // 将textarea的内容同步到div中
                 divTag.textContent = this.value;
+
+                applySettings(divTag);
             });
 
 
@@ -672,72 +674,13 @@
                 // 首先清理所有之前添加的样式
                 cleanupPreviousStyling(element);
                 
-                // 设置基础样式（字体大小和行高），但不设置letter-spacing
+                // 设置基础样式（字体大小和行高）
                 element.style.fontSize = `${settings.fontSize}px`;
+                element.style.letterSpacing = `${settings.letterSpacing}px`;
                 element.style.lineHeight = settings.lineHeight;
                 
-                // 处理所有文本节点，分别设置中文和英文的字间距
-                processTextNodesWithSpacing(element);
-            }
-            
-            // 新的处理函数，同时处理中文和英文的字间距
-            function processTextNodesWithSpacing(element) {
-                const walker = document.createTreeWalker(
-                    element,
-                    NodeFilter.SHOW_TEXT,
-                    null,
-                    false
-                );
-                
-                const textNodes = [];
-                let node;
-                while (node = walker.nextNode()) {
-                    if (node.nodeValue.trim() !== '') {
-                        textNodes.push(node);
-                    }
-                }
-                
-                textNodes.forEach(textNode => {
-                    const text = textNode.nodeValue;
-                    
-                    // 匹配英文单词的正则表达式
-                    const englishPattern = /[a-zA-Z]+/g;
-                    
-                    const fragment = document.createDocumentFragment();
-                    
-                    let lastIndex = 0;
-                    let match;
-                    
-                    while ((match = englishPattern.exec(text)) !== null) {
-                        // 处理英文单词前的中文内容
-                        if (match.index > lastIndex) {
-                            const chineseText = text.substring(lastIndex, match.index);
-                            const chineseSpan = document.createElement('span');
-                            chineseSpan.style.letterSpacing = `${settings.letterSpacing}px`;
-                            chineseSpan.textContent = chineseText;
-                            fragment.appendChild(chineseSpan);
-                        }
-                        
-                        // 处理英文单词
-                        const englishSpan = document.createElement('span');
-                        englishSpan.style.setProperty('letter-spacing', '0px', 'important');
-                        englishSpan.textContent = match[0];
-                        fragment.appendChild(englishSpan);
-                        
-                        lastIndex = englishPattern.lastIndex;
-                    }
-                    
-                    // 处理剩余的中文内容
-                    if (lastIndex < text.length) {
-                        const remainingText = text.substring(lastIndex);
-                        const remainingSpan = document.createElement('span');
-                        remainingSpan.style.letterSpacing = `${settings.letterSpacing}px`;
-                        remainingSpan.textContent = remainingText;
-                        fragment.appendChild(remainingSpan);
-                    }
-                    
-                    textNode.parentNode.replaceChild(fragment, textNode);
-                });
+                // 处理所有英文单词，将letterSpacing设置为0px
+                processTextNodesForEnglish(element);
             }
             
             // 清理之前应用的所有样式
@@ -757,6 +700,75 @@
                 
                 // 处理完成后，合并相邻的文本节点
                 element.normalize();
+            }
+            
+           
+            // 处理文本节点以将英文单词的letterSpacing设置为0px
+            function processTextNodesForEnglish(element) {
+                // 使用TreeWalker遍历所有文本节点
+                const walker = document.createTreeWalker(
+                    element,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+                
+                // 收集需要处理的文本节点
+                const textNodes = [];
+                let node;
+                while (node = walker.nextNode()) {
+                    if (node.nodeValue.trim() !== '') {
+                        textNodes.push(node);
+                    }
+                }
+                
+                // 处理收集到的文本节点
+                textNodes.forEach(textNode => {
+                    const text = textNode.nodeValue;
+                    
+                    // 检查是否包含英文字符
+                    const regex = /[a-zA-Z0-9\-_\.\/:?=+*()\[\]{},;'"]+/;
+                    if (!regex.test(text)) {
+                        return; // 如果不包含英文，跳过处理
+                    }
+                    
+                    // 创建文档片段来保存处理后的内容
+                    const fragment = document.createDocumentFragment();
+                    
+                    // 匹配英文单词的正则表达式
+                    const pattern = /(\b[a-zA-Z0-9\-_\.\/:?=+*()\[\]{},;'"]+\b)/g;
+                    
+                    let lastIndex = 0;
+                    let match;
+                    
+                    // 处理所有英文单词匹配项
+                    while ((match = pattern.exec(text)) !== null) {
+                        // 添加匹配前的非英文内容
+                        if (match.index > lastIndex) {
+                            fragment.appendChild(
+                                document.createTextNode(text.substring(lastIndex, match.index))
+                            );
+                        }
+                        
+                        // 创建带有letterSpacing为0px的span，包含英文单词
+                        const englishSpan = document.createElement('span');
+                        englishSpan.style.letterSpacing = '0px';
+                        englishSpan.textContent = match[0];
+                        fragment.appendChild(englishSpan);
+                        
+                        lastIndex = pattern.lastIndex;
+                    }
+                    
+                    // 添加剩余的非英文内容
+                    if (lastIndex < text.length) {
+                        fragment.appendChild(
+                            document.createTextNode(text.substring(lastIndex))
+                        );
+                    }
+                    
+                    // 替换原始文本节点
+                    textNode.parentNode.replaceChild(fragment, textNode);
+                });
             }
             
             floatingButton.addEventListener('click', function() {
