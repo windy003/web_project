@@ -7,26 +7,94 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='180x180.png') }}"> 
     <link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='180x180.png') }}">
 
-
     <style>
+        /* 定义CSS变量用于主题切换 */
+        :root {
+            --bg-color: #f5f5f5;
+            --container-bg: white;
+            --text-color: #333;
+            --border-color: #ddd;
+            --input-bg: white;
+            --input-border: #ddd;
+            --panel-bg: rgba(255, 255, 255, 0.7);
+            --panel-text: #333;
+            --pre-bg: #f9f9f9;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --progress-bg: #4caf50;
+            --drag-handle-bg: rgba(224, 224, 224, 0.7);
+            --drag-handle-text: #666;
+            --close-color: #aaa;
+            --close-hover: black;
+        }
+
+        /* 夜间模式变量 */
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --border-color: #444;
+            --input-bg: #3a3a3a;
+            --input-border: #555;
+            --panel-bg: rgba(45, 45, 45, 0.9);
+            --panel-text: #e0e0e0;
+            --pre-bg: #2a2a2a;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --progress-bg: #4caf50;
+            --drag-handle-bg: rgba(80, 80, 80, 0.7);
+            --drag-handle-text: #aaa;
+            --close-color: #ccc;
+            --close-hover: white;
+        }
+
+        /* 自动检测系统主题 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --container-bg: #2d2d2d;
+                --text-color: #e0e0e0;
+                --border-color: #444;
+                --input-bg: #3a3a3a;
+                --input-border: #555;
+                --panel-bg: rgba(45, 45, 45, 0.9);
+                --panel-text: #e0e0e0;
+                --pre-bg: #2a2a2a;
+                --shadow-color: rgba(0, 0, 0, 0.3);
+                --button-bg: #4CAF50;
+                --button-hover: #45a049;
+                --progress-bg: #4caf50;
+                --drag-handle-bg: rgba(80, 80, 80, 0.7);
+                --drag-handle-text: #aaa;
+                --close-color: #ccc;
+                --close-hover: white;
+            }
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: white;
+            background-color: var(--container-bg);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
         h1 {
-            color: #333;
+            color: var(--text-color);
             text-align: center;
             margin-bottom: 30px;
+            transition: color 0.3s ease;
         }
         .input-container {
             display: flex;
@@ -36,16 +104,19 @@
         }
         .input-container input {
             padding: 10px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--input-border);
             border-radius: 4px;
             font-size: 16px;
             flex-grow: 1;
             max-width: 400px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
         .input-container button {
             padding: 10px 10px;
             margin-right: 10px;
-            background-color: #4CAF50;
+            background-color: var(--button-bg);
             color: white;
             border: none;
             border-radius: 4px;
@@ -54,10 +125,10 @@
             transition: background-color 0.3s;
         }
         .input-container button:hover {
-            background-color: #45a049;
+            background-color: var(--button-hover);
         }
         pre {
-            background-color: #f9f9f9;
+            background-color: var(--pre-bg);
             padding: 15px;
             border-radius: 4px;
             white-space: pre-wrap;
@@ -65,18 +136,21 @@
             line-height: 1.5;
             max-height: 500px;
             overflow-y: auto;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
         
         .close {
-            color: #aaa;
+            color: var(--close-color);
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.3s ease;
         }
         .close:hover,
         .close:focus {
-            color: black;
+            color: var(--close-hover);
             text-decoration: none;
         }
         .title-info {
@@ -84,26 +158,30 @@
             font-size: 24px;
             font-weight: bold;
             margin: 20px 0;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
         /* 控制面板样式 */
         .control-panel {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.7); /* 增加透明度 */
+            background: var(--panel-bg);
             padding: 8px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 180px; /* 减小宽度 */
+            box-shadow: 0 2px 10px var(--shadow-color);
+            width: 180px;
             z-index: 1000;
-            display: none; /* 默认隐藏 */
-            font-size: 14px; /* 减小字体大小 */
+            display: none;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         /* 控制面板按钮样式 */
         .panel-toggle-btn {
             margin-left: 10px;
-            background-color: #4CAF50;
+            background-color: var(--button-bg);
             color: white;
             border: none;
             border-radius: 4px;
@@ -114,56 +192,58 @@
         /* 移动端适配 */
         @media (max-width: 768px) {
             .control-panel {
-                width: 70%; /* 减小宽度比例 */
+                width: 70%;
                 max-width: 220px;
                 top: 10px;
                 right: 10px;
             }
             pre {
-                width: 100vw; /* 占满整个视口宽度 */
-                max-width: 100vw; /* 确保不会超出视口 */
-                margin-left: calc(-50vw + 50%); /* 使元素居中对齐，并延伸到屏幕边缘 */
-                padding: 10px; /* 添加适当的内边距 */
-                box-sizing: border-box; /* 确保内边距不会增加总宽度 */
-                white-space: pre-wrap; /* 保持换行并允许文本自动换行 */
-                overflow-x: hidden; /* 隐藏水平滚动条 */
-                position: relative; /* 确保定位正确 */
-                left: 0; /* 确保左对齐 */
+                width: 100vw;
+                max-width: 100vw;
+                margin-left: calc(-50vw + 50%);
+                padding: 10px;
+                box-sizing: border-box;
+                white-space: pre-wrap;
+                overflow-x: hidden;
+                position: relative;
+                left: 0;
             }
             
-            /* 如果需要，可以调整 pre 的父容器 */
             body, html, .container, .content-area {
                 padding: 0;
                 margin: 0;
                 width: 100%;
-                overflow-x: hidden; /* 防止水平滚动 */
+                overflow-x: hidden;
             }
         }
 
         /* 拖动手柄样式 */
         .drag-handle {
-            height: 16px; /* 减小高度 */
-            background-color: rgba(224, 224, 224, 0.7); /* 增加透明度 */
+            height: 16px;
+            background-color: var(--drag-handle-bg);
             border-radius: 4px;
             margin-bottom: 8px;
             cursor: move;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background-color 0.3s ease;
         }
         
         .drag-handle::before {
             content: "⋮⋮";
-            color: #666;
+            color: var(--drag-handle-text);
             font-size: 14px;
             letter-spacing: 2px;
+            transition: color 0.3s ease;
         }
 
         .control-panel label {
             display: block;
             margin: 4px 0;
-            font-size: 13px; /* 减小字体大小 */
-            color: #333;
+            font-size: 13px;
+            color: var(--panel-text);
+            transition: color 0.3s ease;
         }
 
         /* 添加滑动条和数值输入框的容器样式 */
@@ -181,9 +261,12 @@
         .slider-container input[type="number"] {
             width: 45px;
             padding: 3px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--input-border);
             border-radius: 4px;
             font-size: 12px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         /* 修改原有的输入框样式 */
@@ -194,21 +277,24 @@
         .control-panel input[type="number"] {
             margin: 0;
             padding: 3px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--input-border);
             border-radius: 4px;
             font-size: 12px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         .toggle-btn {
             width: 100%;
             padding: 4px;
             margin-bottom: 8px;
-            background-color: rgba(76, 175, 80, 0.8); /* 增加透明度 */
+            background-color: var(--button-bg);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px; /* 减小字体大小 */
+            font-size: 13px;
         }
         .panel-content {
             display: block;
@@ -216,10 +302,6 @@
         .panel-content.collapsed {
             display: none;
         }
-        
-        
-
-        
 
         /* 颜色选择器容器样式 */
         .color-container {
@@ -231,22 +313,25 @@
         .color-container input[type="color"] {
             width: 30px;
             height: 30px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 0;
             margin-right: 8px;
             cursor: pointer;
+            transition: border-color 0.3s ease;
         }
         
         .color-container input[type="text"] {
             flex: 1;
             padding: 3px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--input-border);
             border-radius: 4px;
             font-size: 12px;
             text-transform: uppercase;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
-
 
         /* 响应式设计 */
         @media (max-width: 600px) {
@@ -262,78 +347,60 @@
                 margin-bottom: 10px;
             }
 
-
             #div_tag {
-            word-wrap: break-word;  /* 旧版浏览器支持 */
-            overflow-wrap: break-word;  /* 新版标准 */
-            white-space: normal;  /* 确保文本正常换行 */
-            margin: 0 10px 0 10px;
-        }
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                margin: 0 10px 0 10px;
+            }
 
-        #div_tag img {
-            max-width: 90%; /* 缩小图片宽度，留出右边距 */
-            height: auto;
-            display: block;
-            margin: 0 auto; /* 水平居中 */
-        }
-        }
-
-
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+            #div_tag img {
+                max-width: 90%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
         }
 
         #contentDisplay {
-            background-color: white;
+            background-color: var(--container-bg);
             padding: 20px;
-            border: 1px solid #ddd;  /* 添加边框 */
-            border-radius: 8px;      /* 添加圆角 */
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             margin-top: 15px;
             line-height: 1.6;
-            max-height: 70vh;        /* 限制最大高度为视口高度的70% */
-            overflow-y: auto;        /* 内容过多时显示滚动条 */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);  /* 添加阴影效果 */
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
         }
-
-        
 
         /* 内容容器样式 */
         .content-container {
             position: relative;
             margin-top: 20px;
-            background-color: white;
-            border: 1px solid #ddd;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
-
 
         /* 扩展内容样式，铺满页面 */
         .expanded-content {
-            background-color: #F2F0E9;
+            background-color: var(--bg-color);
             padding: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             margin-top: 15px;
             line-height: 1.6;
-            min-height: 80vh; /* 至少占据视口高度的80% */
+            min-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
-        
 
         /* 响应式调整 */
         @media (max-width: 768px) {
@@ -343,29 +410,29 @@
             
             .expanded-content {
                 padding: 15px;
-                min-height: 85vh; /* 在移动设备上占据更多空间 */
+                min-height: 85vh;
             }
         }
 
         /* 全页面内容样式 - 直接铺满页面，没有方框边界 */
         .full-page-content {
-            padding: 20px 0; /* 只保留上下内边距，移除左右内边距 */
+            padding: 20px 0;
             margin-top: 15px;
             line-height: 1.6;
-            background-color: transparent; /* 透明背景 */
-            border: none; /* 移除边框 */
-            box-shadow: none; /* 移除阴影 */
-            width: 100%; /* 占满容器宽度 */
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            width: 100%;
         }
 
         /* 修改容器样式，使内容可以更宽 */
         .container {
-            max-width: 1000px; /* 增加最大宽度 */
+            max-width: 1000px;
             margin: 0 auto;
-            background-color: transparent; /* 容器背景透明 */
+            background-color: transparent;
             padding: 20px;
-            border-radius: 0; /* 移除圆角 */
-            box-shadow: none; /* 移除阴影 */
+            border-radius: 0;
+            box-shadow: none;
         }
 
         /* 修改整体页面背景 */
@@ -373,13 +440,13 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #F2F0E9; /* 设置整个页面的背景色 */
-            color: #333; /* 文本颜色 */
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
         /* 确保内容区域有足够的高度 */
         #contentDisplay {
-            min-height: 70vh; /* 至少占据视口高度的70% */
+            min-height: 70vh;
         }
 
         /* 响应式调整 */
@@ -392,8 +459,6 @@
                 padding: 10px 0;
             }
         }
-
-        
 
         /* 悬浮球样式 */
         .floating_jump_ball {
@@ -408,7 +473,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px var(--shadow-color);
             cursor: pointer;
             z-index: 9999;
             transition: all 0.3s ease;
@@ -417,7 +482,6 @@
             pointer-events: auto;
             text-decoration: none;
         }
-        
         
         /* 悬浮按钮球样式 */
         .floating_button_ball {
@@ -432,7 +496,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px var(--shadow-color);
             cursor: pointer;
             z-index: 9999;
             transition: all 0.3s ease;
@@ -442,25 +506,36 @@
             text-decoration: none;
         }
 
-
         input::placeholder {
-            color: #999; !important/* 使用浅灰色 */
-            opacity: 1; !important /* 确保不透明 */
+            color: #999 !important;
+            opacity: 1 !important;
         }
 
+        /* 夜间模式下的占位符文本 */
+        [data-theme="dark"] input::placeholder {
+            color: #aaa !important;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            input::placeholder {
+                color: #aaa !important;
+            }
+        }
 
         #div_tag {
-            word-wrap: break-word;  /* 旧版浏览器支持 */
-            overflow-wrap: break-word;  /* 新版标准 */
-            white-space: normal;  /* 确保文本正常换行 */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
             margin: 0 10px 0 10px;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         #div_tag img {
-            max-width: 90%; /* 缩小图片宽度，留出右边距 */
+            max-width: 90%;
             height: auto;
             display: block;
-            margin: 0 auto; /* 水平居中 */
+            margin: 0 auto;
             box-sizing: border-box;
         }
 
@@ -471,7 +546,7 @@
             top: 0;
             width: 4px;
             height: 0;
-            background-color:#4caf50;
+            background-color: var(--progress-bg);
             z-index: 9999;
             transition: height 0.1s;
         }
@@ -482,44 +557,44 @@
                 width: 10px;
             }
 
-
             .jznr_btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            /* padding: 10px 20px; */
-            cursor: pointer;    
-            /* margin-right: 10px; */
-            /* margin-right: 5%; */
-            width: 100px;
+                background-color: var(--button-bg);
+                color: white;
+                border: none;
+                cursor: pointer;    
+                width: 100px;
+            }
 
             #div_tag {
-            word-wrap: break-word;  /* 旧版浏览器支持 */
-            overflow-wrap: break-word;  /* 新版标准 */
-            white-space: normal;  /* 确保文本正常换行 */
-            margin: 0 10px 0 10px;
-        }
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                margin: 0 10px 0 10px;
+            }
 
-        #div_tag img {
-            max-width: 97%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            margin: 0 10px 0 10px;
-
-        }
-        }
-
+            #div_tag img {
+                max-width: 97%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+                margin: 0 10px 0 10px;
+            }
         }
 
         .jznr_btn {
-            background-color: #4CAF50;
+            background-color: var(--button-bg);
             color: white;
             border: none;
-            /* padding: 10px 20px; */
             cursor: pointer;    
-            /* margin-right: 10px; */
             width: 100px;
+        }
+
+        /* textarea样式 */
+        textarea {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
         
     </style>
@@ -535,8 +610,6 @@
                
         <textarea id="textInput" name="text" placeholder="输入文本" style="width: 300px; height: 100px;"></textarea>
 
-
-        
         <!-- 使用div替代p标签 -->
         <div id="div_tag" >
         </div>
@@ -564,20 +637,41 @@
                 <input type="range" id="lineHeight" min="1" max="6" value="1.5" step="0.1">
                 <input type="number" id="lineHeightInput" min="1" max="6" value="1.5" step="0.1">
             </div>
-            
-           
         </div>
     </div>
 
-  
-
-
     <!-- 悬浮按钮控制控制面板 -->
-    <div id="floating_button"   class="floating_button_ball" style="font-size: 30px;">
+    <div id="floating_button" class="floating_button_ball" style="font-size: 30px;">
     </div>  
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式检测和切换功能
+            function initThemeDetection() {
+                // 检测系统主题偏好
+                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                
+                // 应用主题
+                function applyTheme(isDark) {
+                    if (isDark) {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                    } else {
+                        document.documentElement.removeAttribute('data-theme');
+                    }
+                }
+                
+                // 初始应用主题
+                applyTheme(mediaQuery.matches);
+                
+                // 监听系统主题变化
+                mediaQuery.addEventListener('change', function(e) {
+                    applyTheme(e.matches);
+                });
+            }
+            
+            // 初始化主题检测
+            initThemeDetection();
+
             // 获取控制面板相关元素
             const controlPanel = document.querySelector('.control-panel');
             const togglePanel = document.getElementById('togglePanel');
@@ -968,9 +1062,6 @@
 
             // 加载保存的位置
             loadBallPosition();
-
-            
-            
         });
     </script>
 </body>
