@@ -29,27 +29,6 @@
             --close-hover: black;
         }
 
-        /* 夜间模式变量 */
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --container-bg: #2d2d2d;
-            --text-color: #e0e0e0;
-            --border-color: #444;
-            --input-bg: #3a3a3a;
-            --input-border: #555;
-            --panel-bg: rgba(45, 45, 45, 0.9);
-            --panel-text: #e0e0e0;
-            --pre-bg: #2a2a2a;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --button-bg: #4CAF50;
-            --button-hover: #45a049;
-            --progress-bg: #4caf50;
-            --drag-handle-bg: rgba(80, 80, 80, 0.7);
-            --drag-handle-text: #aaa;
-            --close-color: #ccc;
-            --close-hover: white;
-        }
-
         /* 自动检测系统主题 */
         @media (prefers-color-scheme: dark) {
             :root {
@@ -646,31 +625,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 夜间模式检测和切换功能
-            function initThemeDetection() {
-                // 检测系统主题偏好
-                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                
-                // 应用主题
-                function applyTheme(isDark) {
-                    if (isDark) {
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                    } else {
-                        document.documentElement.removeAttribute('data-theme');
-                    }
-                }
-                
-                // 初始应用主题
-                applyTheme(mediaQuery.matches);
-                
-                // 监听系统主题变化
-                mediaQuery.addEventListener('change', function(e) {
-                    applyTheme(e.matches);
-                });
-            }
             
-            // 初始化主题检测
-            initThemeDetection();
 
             // 获取控制面板相关元素
             const controlPanel = document.querySelector('.control-panel');
