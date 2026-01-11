@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8位颜色代码转换器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            font-family: monospace;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+        }
+        .color-preview {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .preview-box {
+            flex: 1;
+            text-align: center;
+        }
+        .preview-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .color-square {
+            width: 100%;
+            height: 100px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .checkerboard {
+            background-image:
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .color-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 8px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            color: #666;
+        }
+        .result-value {
+            font-family: monospace;
+            font-weight: 500;
+        }
+        .format-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e7f3ff;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #0066cc;
+        }
+        .bg-selector {
+            margin-top: 15px;
+        }
+        .bg-selector label {
+            display: inline-block;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>8位颜色代码转换器</h1>
+    <div class="container">
+        <div class="input-group">
+            <label for="colorInput">输入8位颜色代码 (如 #80000000)</label>
+            <input type="text" id="colorInput" placeholder="#AARRGGBB 或 #RRGGBBAA" value="#80000000">
+        </div>
+
+        <div class="bg-selector">
+            <label>颜色格式:</label>
+            <label><input type="radio" name="format" value="android" checked> #AARRGGBB (Android)</label>
+            <label><input type="radio" name="format" value="css"> #RRGGBBAA (CSS)</label>
+        </div>
+
+        <div class="bg-selector">
+            <label>背景色:</label>
+            <label><input type="radio" name="bg" value="white" checked> 白色</label>
+            <label><input type="radio" name="bg" value="black"> 黑色</label>
+            <label><input type="radio" name="bg" value="custom"> 自定义</label>
+            <input type="color" id="customBg" value="#ffffff" style="vertical-align: middle;">
+        </div>
+
+        <div class="color-preview">
+            <div class="preview-box">
+                <h3>原始颜色 (带透明度)</h3>
+                <div class="color-square checkerboard">
+                    <div class="color-overlay" id="originalColor"></div>
+                </div>
+            </div>
+            <div class="preview-box">
+                <h3>实际显示颜色</h3>
+                <div class="color-square" id="blendedColor"></div>
+            </div>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-row">
+                <span class="result-label">Alpha (透明度)</span>
+                <span class="result-value" id="alphaValue">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">RGBA</span>
+                <span class="result-value" id="rgbaValue">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">混合后 RGB</span>
+                <span class="result-value" id="blendedRgb">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">混合后 HEX</span>
+                <span class="result-value" id="blendedHex">-</span>
+            </div>
+        </div>
+
+        <div class="format-note">
+            <strong>格式说明:</strong><br>
+            #AARRGGBB (Android) - Alpha在前，如 #80FF0000 = 50%透明红色<br>
+            #RRGGBBAA (CSS) - Alpha在后，如 #FF000080 = 50%透明红色<br>
+            <em>请根据你的颜色来源选择正确的格式</em>
+        </div>
+    </div>
+
+    <script>
+        const colorInput = document.getElementById('colorInput');
+        const originalColor = document.getElementById('originalColor');
+        const blendedColor = document.getElementById('blendedColor');
+        const alphaValue = document.getElementById('alphaValue');
+        const rgbaValue = document.getElementById('rgbaValue');
+        const blendedRgb = document.getElementById('blendedRgb');
+        const blendedHex = document.getElementById('blendedHex');
+        const customBg = document.getElementById('customBg');
+
+        function getColorFormat() {
+            return document.querySelector('input[name="format"]:checked').value;
+        }
+
+        function parseColor(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length !== 8) return null;
+
+            let a, r, g, b;
+            const format = getColorFormat();
+
+            if (format === 'android') {
+                // AARRGGBB 格式 (Android)
+                a = parseInt(hex.substring(0, 2), 16);
+                r = parseInt(hex.substring(2, 4), 16);
+                g = parseInt(hex.substring(4, 6), 16);
+                b = parseInt(hex.substring(6, 8), 16);
+            } else {
+                // RRGGBBAA 格式 (CSS)
+                r = parseInt(hex.substring(0, 2), 16);
+                g = parseInt(hex.substring(2, 4), 16);
+                b = parseInt(hex.substring(4, 6), 16);
+                a = parseInt(hex.substring(6, 8), 16);
+            }
+
+            return { r, g, b, a };
+        }
+
+        function getBackgroundColor() {
+            const selected = document.querySelector('input[name="bg"]:checked').value;
+            if (selected === 'white') return { r: 255, g: 255, b: 255 };
+            if (selected === 'black') return { r: 0, g: 0, b: 0 };
+            const hex = customBg.value.replace('#', '');
+            return {
+                r: parseInt(hex.substring(0, 2), 16),
+                g: parseInt(hex.substring(2, 4), 16),
+                b: parseInt(hex.substring(4, 6), 16)
+            };
+        }
+
+        function blendColors(fg, bg) {
+            const alpha = fg.a / 255;
+            return {
+                r: Math.round(fg.r * alpha + bg.r * (1 - alpha)),
+                g: Math.round(fg.g * alpha + bg.g * (1 - alpha)),
+                b: Math.round(fg.b * alpha + bg.b * (1 - alpha))
+            };
+        }
+
+        function toHex(num) {
+            return num.toString(16).padStart(2, '0').toUpperCase();
+        }
+
+        function updateColor() {
+            const input = colorInput.value.trim();
+            const color = parseColor(input);
+
+            if (!color) {
+                alphaValue.textContent = '无效输入';
+                rgbaValue.textContent = '-';
+                blendedRgb.textContent = '-';
+                blendedHex.textContent = '-';
+                originalColor.style.backgroundColor = 'transparent';
+                blendedColor.style.backgroundColor = 'transparent';
+                return;
+            }
+
+            const bg = getBackgroundColor();
+            const blended = blendColors(color, bg);
+
+            // 显示原始颜色
+            originalColor.style.backgroundColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a / 255})`;
+
+            // 显示混合后颜色
+            blendedColor.style.backgroundColor = `rgb(${blended.r}, ${blended.g}, ${blended.b})`;
+
+            // 更新结果
+            const alphaPercent = Math.round((color.a / 255) * 100);
+            alphaValue.textContent = `${color.a} (${alphaPercent}%)`;
+            rgbaValue.textContent = `rgba(${color.r}, ${color.g}, ${color.b}, ${(color.a / 255).toFixed(2)})`;
+            blendedRgb.textContent = `rgb(${blended.r}, ${blended.g}, ${blended.b})`;
+            blendedHex.textContent = `#${toHex(blended.r)}${toHex(blended.g)}${toHex(blended.b)}`;
+        }
+
+        colorInput.addEventListener('input', updateColor);
+        document.querySelectorAll('input[name="format"]').forEach(radio => {
+            radio.addEventListener('change', updateColor);
+        });
+        document.querySelectorAll('input[name="bg"]').forEach(radio => {
+            radio.addEventListener('change', updateColor);
+        });
+        customBg.addEventListener('input', updateColor);
+
+        // 初始化
+        updateColor();
+    </script>
+</body>
+</html>
