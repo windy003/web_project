@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>windy003 的 GitHub 仓库</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #ffffff;
+      color: #24292f;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #f6f8fa;
+      border-bottom: 1px solid #d0d7de;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #d0d7de;
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #24292f;
+    }
+
+    header h1 span {
+      color: #0969da;
+    }
+
+    header .repo-count {
+      margin-left: auto;
+      font-size: 13px;
+      color: #57606a;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    .search-bar {
+      padding: 20px 24px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: #ffffff;
+      border-bottom: 1px solid #d0d7de;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #57606a;
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      padding: 9px 12px 9px 38px;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      color: #24292f;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #search:focus { border-color: #0969da; }
+
+    #search.error { border-color: #cf222e; }
+
+    .regex-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 14px;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #57606a;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .regex-toggle:hover { border-color: #0969da; color: #24292f; }
+
+    .regex-toggle.active {
+      background: #ddf4ff;
+      border-color: #0969da;
+      color: #0969da;
+    }
+
+    .regex-toggle input { display: none; }
+
+    .regex-label {
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    #error-msg {
+      font-size: 12px;
+      color: #f85149;
+      padding: 0 24px 8px;
+      display: none;
+    }
+
+    #error-msg.show { display: block; }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .stats {
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 16px;
+    }
+
+    .stats strong { color: #24292f; }
+
+    .repo-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .repo-card {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+
+    .repo-card:hover {
+      border-color: #0969da;
+      transform: translateY(-1px);
+    }
+
+    .repo-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .repo-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0969da;
+    }
+
+    mark {
+      background: #fff8c5;
+      color: #7d4e00;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    .repo-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+
+    .badge.private {
+      color: #9a6700;
+      border-color: #d4a72c;
+      background: #fff8c5;
+    }
+
+    .badge.public {
+      color: #1a7f37;
+      border-color: #82cfaa;
+      background: #dafbe1;
+    }
+
+    .repo-desc {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #57606a;
+      line-height: 1.6;
+    }
+
+    .repo-footer {
+      margin-top: 12px;
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: #57606a;
+    }
+
+    .repo-footer span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .lang-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .empty-state, .loading, .fetch-error {
+      text-align: center;
+      padding: 80px 24px;
+      color: #57606a;
+    }
+
+    .empty-state svg, .loading svg, .fetch-error svg {
+      margin: 0 auto 16px;
+      display: block;
+      opacity: 0.4;
+    }
+
+    .loading .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #d0d7de;
+      border-top-color: #0969da;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .fetch-error .retry-btn {
+      margin-top: 16px;
+      padding: 8px 20px;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      color: #24292f;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .fetch-error .retry-btn:hover { background: #eaeef2; }
+
+    /* Language colors */
+    .lang-JavaScript { background: #f1e05a; }
+    .lang-TypeScript { background: #3178c6; }
+    .lang-Python     { background: #3572A5; }
+    .lang-HTML       { background: #e34c26; }
+    .lang-CSS        { background: #563d7c; }
+    .lang-Vue        { background: #41b883; }
+    .lang-Go         { background: #00ADD8; }
+    .lang-Rust       { background: #dea584; }
+    .lang-Java       { background: #b07219; }
+    .lang-C          { background: #555555; }
+    .lang-Shell      { background: #89e051; }
+    .lang-default    { background: #8b949e; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img id="avatar" src="" alt="avatar">
+  <h1><span>windy003</span> 的 GitHub 仓库</h1>
+  <div class="repo-count" id="repo-count">加载中...</div>
+</header>
+
+<div class="search-bar">
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"/>
+    </svg>
+    <input type="text" id="search" placeholder="搜索仓库名或描述..." autocomplete="off" spellcheck="false">
+  </div>
+  <label class="regex-toggle" id="regex-toggle">
+    <input type="checkbox" id="regex-check">
+    <span class="regex-label">.*</span>
+    <span>正则模式</span>
+  </label>
+</div>
+<div id="error-msg"></div>
+
+<div class="container">
+  <div class="stats" id="stats"></div>
+  <div class="repo-grid" id="repo-grid">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>正在加载仓库数据...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const USERNAME = 'windy003';
+const API = `https://api.github.com/users/${USERNAME}`;
+
+let allRepos = [];
+
+const langColor = lang => {
+  const cls = `lang-${lang}`;
+  const known = ['JavaScript','TypeScript','Python','HTML','CSS','Vue','Go','Rust','Java','C','Shell'];
+  return known.includes(lang) ? cls : 'lang-default';
+};
+
+const formatDate = iso => {
+  const d = new Date(iso);
+  return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+async function fetchAllRepos() {
+  let repos = [], page = 1;
+  while (true) {
+    const r = await fetch(`${API}/repos?per_page=100&page=${page}&sort=updated`, {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!r.ok) throw new Error(`GitHub API 错误: ${r.status} ${r.statusText}`);
+    const data = await r.json();
+    repos = repos.concat(data);
+    if (data.length < 100) break;
+    page++;
+  }
+  return repos;
+}
+
+function highlight(text, pattern, isRegex) {
+  if (!pattern) return escHtml(text);
+  try {
+    const re = isRegex ? new RegExp(pattern, 'gi') : new RegExp(escRegex(pattern), 'gi');
+    return escHtml(text).replace(re.source ? re : new RegExp(escRegex(pattern), 'gi'),
+      m => `<mark>${m}</mark>`
+    );
+  } catch { return escHtml(text); }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function escRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function renderRepos(repos, query, isRegex) {
+  const grid = document.getElementById('repo-grid');
+  const stats = document.getElementById('stats');
+
+  if (!repos.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11 17.938A8.001 8.001 0 0 1 12 2a8 8 0 0 1 .062 15.938V20h1a1 1 0 0 1 0 2h-2a1 1 0 0 1-1-1v-3.062zM12 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm-1-5h2v2h-2v-2zm0-6h2v4h-2V5z"/>
+        </svg>
+        <div>没有找到匹配的仓库</div>
+      </div>`;
+    stats.textContent = '';
+    return;
+  }
+
+  stats.innerHTML = `共找到 <strong>${repos.length}</strong> 个仓库${query ? `，关键词：<strong>${escHtml(query)}</strong>` : ''}`;
+
+  grid.innerHTML = repos.map(repo => {
+    const name = highlight(repo.name, query, isRegex);
+    const desc = repo.description ? highlight(repo.description, query, isRegex) : '<span style="opacity:.4">暂无描述</span>';
+    const stars = repo.stargazers_count;
+    const forks = repo.forks_count;
+    const lang = repo.language;
+    return `
+      <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener">
+        <div class="repo-header">
+          <div class="repo-name">${name}</div>
+          <div class="repo-meta">
+            <span class="badge ${repo.private ? 'private' : 'public'}">${repo.private ? '私有' : '公开'}</span>
+          </div>
+        </div>
+        <div class="repo-desc">${desc}</div>
+        <div class="repo-footer">
+          ${lang ? `<span><span class="lang-dot ${langColor(lang)}"></span>${escHtml(lang)}</span>` : ''}
+          ${stars ? `<span>★ ${stars}</span>` : ''}
+          ${forks ? `<span>⑂ ${forks}</span>` : ''}
+          <span style="margin-left:auto">更新于 ${formatDate(repo.updated_at)}</span>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+function filterAndRender() {
+  const query = document.getElementById('search').value.trim();
+  const isRegex = document.getElementById('regex-check').checked;
+  const errMsg = document.getElementById('error-msg');
+  const searchEl = document.getElementById('search');
+
+  // Validate regex
+  if (isRegex && query) {
+    try { new RegExp(query); }
+    catch (e) {
+      errMsg.textContent = `正则表达式错误: ${e.message}`;
+      errMsg.classList.add('show');
+      searchEl.classList.add('error');
+      return;
+    }
+  }
+  errMsg.classList.remove('show');
+  searchEl.classList.remove('error');
+
+  if (!query) {
+    renderRepos(allRepos, '', false);
+    return;
+  }
+
+  const filtered = allRepos.filter(repo => {
+    try {
+      const re = isRegex ? new RegExp(query, 'i') : new RegExp(escRegex(query), 'i');
+      return re.test(repo.name) || re.test(repo.description || '');
+    } catch { return false; }
+  });
+
+  renderRepos(filtered, query, isRegex);
+}
+
+async function init() {
+  // Load avatar
+  fetch(`${API}`).then(r => r.json()).then(u => {
+    document.getElementById('avatar').src = u.avatar_url;
+  }).catch(() => {});
+
+  try {
+    allRepos = await fetchAllRepos();
+    document.getElementById('repo-count').textContent = `${allRepos.length} 个仓库`;
+    filterAndRender();
+  } catch (e) {
+    document.getElementById('repo-grid').innerHTML = `
+      <div class="fetch-error">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <div>加载失败：${e.message}</div>
+        <button class="retry-btn" onclick="location.reload()">重试</button>
+      </div>`;
+    document.getElementById('repo-count').textContent = '加载失败';
+  }
+}
+
+// Events
+document.getElementById('search').addEventListener('input', filterAndRender);
+
+document.getElementById('regex-toggle').addEventListener('click', () => {
+  const cb = document.getElementById('regex-check');
+  cb.checked = !cb.checked;
+  document.getElementById('regex-toggle').classList.toggle('active', cb.checked);
+  filterAndRender();
+});
+
+function escRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+init();
+</script>
+</body>
+</html>
