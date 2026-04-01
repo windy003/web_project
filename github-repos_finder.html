@@ -499,6 +499,26 @@ function escRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  // Alt+R: toggle regex mode
+  if (e.altKey && !e.ctrlKey && !e.shiftKey && e.key === 'r') {
+    e.preventDefault();
+    const cb = document.getElementById('regex-check');
+    cb.checked = !cb.checked;
+    document.getElementById('regex-toggle').classList.toggle('active', cb.checked);
+    filterAndRender();
+  }
+
+  // Ctrl+Shift+F: focus search box
+  if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+    e.preventDefault();
+    const searchEl = document.getElementById('search');
+    searchEl.focus();
+    searchEl.select();
+  }
+});
+
 init();
 </script>
 </body>
