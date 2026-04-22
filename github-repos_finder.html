@@ -240,6 +240,23 @@
       gap: 4px;
     }
 
+    .release-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #1a7f37;
+      background: #dafbe1;
+      border: 1px solid #82cfaa;
+      border-radius: 20px;
+      padding: 2px 8px;
+      text-decoration: none;
+      white-space: nowrap;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .lang-dot {
       width: 10px;
       height: 10px;
@@ -367,6 +384,24 @@ async function fetchAllRepos() {
   return repos;
 }
 
+async function fetchLatestRelease(repo) {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${repo.full_name}/releases/latest`, {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return { name: data.name || data.tag_name, url: data.html_url };
+  } catch { return null; }
+}
+
+async function fetchAllReleases(repos) {
+  const results = await Promise.all(repos.map(repo => fetchLatestRelease(repo)));
+  results.forEach((release, i) => {
+    repos[i].latestRelease = release;
+  });
+}
+
 function highlight(text, pattern, isRegex) {
   if (!pattern) return escHtml(text);
   try {
@@ -414,6 +449,7 @@ function renderRepos(repos, query, isRegex) {
         <div class="repo-header">
           <div class="repo-name">${name}</div>
           <div class="repo-meta">
+            ${repo.latestRelease ? `<span class="release-tag" title="${escHtml(repo.latestRelease.name)}">🏷️ ${escHtml(repo.latestRelease.name)}</span>` : ''}
             <span class="badge ${repo.private ? 'private' : 'public'}">${repo.private ? '私有' : '公开'}</span>
           </div>
         </div>
@@ -472,6 +508,8 @@ async function init() {
     allRepos = await fetchAllRepos();
     document.getElementById('repo-count').textContent = `${allRepos.length} 个仓库`;
     filterAndRender();
+    // 后台获取所有仓库的最新 release，获取完后重新渲染
+    fetchAllReleases(allRepos).then(() => filterAndRender());
   } catch (e) {
     document.getElementById('repo-grid').innerHTML = `
       <div class="fetch-error">
