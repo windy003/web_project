@@ -257,6 +257,72 @@
       text-overflow: ellipsis;
     }
 
+    .token-btn {
+      padding: 8px 14px;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #57606a;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .token-btn:hover { border-color: #0969da; color: #24292f; }
+    .token-btn.has-token { color: #1a7f37; border-color: #82cfaa; background: #dafbe1; }
+
+    .token-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .token-modal-overlay.show { display: flex; }
+
+    .token-modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      width: 460px;
+      max-width: 90vw;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .token-modal h3 { font-size: 16px; margin-bottom: 8px; }
+    .token-modal p { font-size: 13px; color: #57606a; margin-bottom: 16px; line-height: 1.6; }
+    .token-modal input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: monospace;
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .token-modal input:focus { border-color: #0969da; }
+    .token-modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .token-modal-actions button {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #d0d7de;
+      background: #f6f8fa;
+      color: #24292f;
+      transition: background 0.2s;
+    }
+    .token-modal-actions button:hover { background: #eaeef2; }
+    .token-modal-actions .save-btn { background: #2da44e; color: #fff; border-color: #2da44e; }
+    .token-modal-actions .save-btn:hover { background: #218838; }
+    .token-modal-actions .clear-btn { color: #cf222e; }
+
     .lang-dot {
       width: 10px;
       height: 10px;
@@ -337,8 +403,25 @@
     <span class="regex-label">.*</span>
     <span>正则模式</span>
   </label>
+  <button class="token-btn" id="token-btn" onclick="openTokenModal()">🔑 Token</button>
 </div>
 <div id="error-msg"></div>
+
+<div class="token-modal-overlay" id="token-modal">
+  <div class="token-modal">
+    <h3>设置 GitHub Token</h3>
+    <p>输入你的 Personal Access Token 以提升 API 限额（60 → 5000次/小时），并显示每个仓库最新的 Release 名称。<br>
+    生成方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic)，勾选 <code>public_repo</code> 权限。<br>
+    Token 仅保存在浏览器本地，不会上传到任何服务器。</p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+    <div id="token-msg" style="font-size:13px;margin-bottom:12px;display:none"></div>
+    <div class="token-modal-actions">
+      <button class="clear-btn" onclick="clearToken()">清除 Token</button>
+      <button onclick="closeTokenModal()">取消</button>
+      <button class="save-btn" id="save-token-btn" onclick="saveToken()">保存</button>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <div class="stats" id="stats"></div>
@@ -353,10 +436,84 @@
 <script>
 const USERNAME = 'windy003';
 const API = `https://api.github.com/users/${USERNAME}`;
-
-// https://api.github.com/users/windy003
+const TOKEN_KEY = 'github_pat_token';
 
 let allRepos = [];
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function apiHeaders() {
+  const h = { Accept: 'application/vnd.github+json' };
+  const token = getToken();
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
+}
+
+function updateTokenBtn() {
+  const btn = document.getElementById('token-btn');
+  btn.classList.toggle('has-token', !!getToken());
+  btn.textContent = getToken() ? '🔑 已认证' : '🔑 Token';
+}
+
+function openTokenModal() {
+  document.getElementById('token-input').value = getToken();
+  document.getElementById('token-modal').classList.add('show');
+}
+
+function closeTokenModal() {
+  document.getElementById('token-modal').classList.remove('show');
+}
+
+async function saveToken() {
+  const val = document.getElementById('token-input').value.trim();
+  const msg = document.getElementById('token-msg');
+  const btn = document.getElementById('save-token-btn');
+
+  if (!val) {
+    msg.style.display = 'block';
+    msg.style.color = '#cf222e';
+    msg.textContent = '请输入 Token';
+    return;
+  }
+
+  // 验证 Token 是否有效
+  btn.disabled = true;
+  btn.textContent = '验证中...';
+  msg.style.display = 'block';
+  msg.style.color = '#57606a';
+  msg.textContent = '正在验证 Token...';
+
+  try {
+    const r = await fetch('https://api.github.com/user', {
+      headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${val}` }
+    });
+    if (r.ok) {
+      localStorage.setItem(TOKEN_KEY, val);
+      closeTokenModal();
+      updateTokenBtn();
+      msg.style.display = 'none';
+      location.reload();
+    } else {
+      msg.style.color = '#cf222e';
+      msg.textContent = `Token 无效（${r.status}），请检查是否正确或已过期`;
+    }
+  } catch {
+    msg.style.color = '#cf222e';
+    msg.textContent = '网络错误，请检查网络连接';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '保存';
+  }
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  closeTokenModal();
+  updateTokenBtn();
+  location.reload();
+}
 
 const langColor = lang => {
   const cls = `lang-${lang}`;
@@ -373,7 +530,7 @@ async function fetchAllRepos() {
   let repos = [], page = 1;
   while (true) {
     const r = await fetch(`${API}/repos?per_page=100&page=${page}&sort=updated`, {
-      headers: { Accept: 'application/vnd.github+json' }
+      headers: apiHeaders()
     });
     if (!r.ok) throw new Error(`GitHub API 错误: ${r.status} ${r.statusText}`);
     const data = await r.json();
@@ -384,22 +541,24 @@ async function fetchAllRepos() {
   return repos;
 }
 
-async function fetchLatestRelease(repo) {
-  try {
-    const r = await fetch(`https://api.github.com/repos/${repo.full_name}/releases/latest`, {
-      headers: { Accept: 'application/vnd.github+json' }
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    return { name: data.name || data.tag_name, url: data.html_url };
-  } catch { return null; }
-}
-
 async function fetchAllReleases(repos) {
-  const results = await Promise.all(repos.map(repo => fetchLatestRelease(repo)));
-  results.forEach((release, i) => {
-    repos[i].latestRelease = release;
-  });
+  // 先一次性获取每个仓库的 releases 列表（只取1条），用 Promise.allSettled 并行请求
+  const promises = repos.map(repo =>
+    fetch(`https://api.github.com/repos/${repo.full_name}/releases?per_page=1`, {
+      headers: apiHeaders()
+    }).then(r => {
+      if (r.status === 403 || r.status === 429) return { rateLimited: true };
+      if (!r.ok) return null;
+      return r.json();
+    }).then(data => {
+      if (!data || data.rateLimited) return data;
+      if (Array.isArray(data) && data.length > 0) {
+        repo.latestRelease = { name: data[0].name || data[0].tag_name, url: data[0].html_url };
+      }
+      return data;
+    }).catch(() => null)
+  );
+  await Promise.all(promises);
 }
 
 function highlight(text, pattern, isRegex) {
@@ -499,8 +658,10 @@ function filterAndRender() {
 }
 
 async function init() {
+  updateTokenBtn();
+
   // Load avatar
-  fetch(`${API}`).then(r => r.json()).then(u => {
+  fetch(`${API}`, { headers: apiHeaders() }).then(r => r.json()).then(u => {
     document.getElementById('avatar').src = u.avatar_url;
   }).catch(() => {});
 
@@ -508,8 +669,10 @@ async function init() {
     allRepos = await fetchAllRepos();
     document.getElementById('repo-count').textContent = `${allRepos.length} 个仓库`;
     filterAndRender();
-    // 后台获取所有仓库的最新 release，获取完后重新渲染
-    fetchAllReleases(allRepos).then(() => filterAndRender());
+    // 有 Token 时才后台获取 release（无 Token 时配额太少）
+    if (getToken()) {
+      fetchAllReleases(allRepos).then(() => filterAndRender());
+    }
   } catch (e) {
     document.getElementById('repo-grid').innerHTML = `
       <div class="fetch-error">
@@ -555,6 +718,11 @@ document.addEventListener('keydown', e => {
     searchEl.focus();
     searchEl.select();
   }
+});
+
+// 点击遮罩层关闭 Token 弹窗
+document.getElementById('token-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTokenModal();
 });
 
 init();
