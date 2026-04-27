@@ -166,6 +166,7 @@
       color: inherit;
       display: block;
       transition: border-color 0.2s, transform 0.1s;
+      cursor: pointer;
     }
 
     .repo-card:hover {
@@ -255,6 +256,13 @@
       max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
+      cursor: pointer;
+      z-index: 1;
+      position: relative;
+    }
+    .release-tag:hover {
+      background: #aceebb;
+      border-color: #56b87a;
     }
 
     .token-btn {
@@ -396,7 +404,7 @@
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
       <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"/>
     </svg>
-    <input type="text" id="search" placeholder="搜索仓库名或描述..." autocomplete="off" spellcheck="false">
+    <input type="search" id="search" name="repo-search" placeholder="搜索仓库名或描述..." autocomplete="new-password" spellcheck="false">
   </div>
   <label class="regex-toggle" id="regex-toggle">
     <input type="checkbox" id="regex-check">
@@ -604,11 +612,11 @@ function renderRepos(repos, query, isRegex) {
     const forks = repo.forks_count;
     const lang = repo.language;
     return `
-      <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener">
+      <div class="repo-card" data-url="${repo.html_url}" onclick="if(!event.target.closest('.release-tag')){window.open(this.dataset.url,'_blank')}">
         <div class="repo-header">
           <div class="repo-name">${name}</div>
           <div class="repo-meta">
-            ${repo.latestRelease ? `<span class="release-tag" title="${escHtml(repo.latestRelease.name)}">🏷️ ${escHtml(repo.latestRelease.name)}</span>` : ''}
+            ${repo.latestRelease ? `<a class="release-tag" href="${escHtml(repo.latestRelease.url)}" target="_blank" rel="noopener" title="${escHtml(repo.latestRelease.name)}" onclick="event.stopPropagation()">🏷️ ${escHtml(repo.latestRelease.name)}</a>` : ''}
             <span class="badge ${repo.private ? 'private' : 'public'}">${repo.private ? '私有' : '公开'}</span>
           </div>
         </div>
@@ -619,7 +627,7 @@ function renderRepos(repos, query, isRegex) {
           ${forks ? `<span>⑂ ${forks}</span>` : ''}
           <span style="margin-left:auto">更新于 ${formatDate(repo.updated_at)}</span>
         </div>
-      </a>`;
+      </div>`;
   }).join('');
 }
 
