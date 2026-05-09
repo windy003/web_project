@@ -612,7 +612,7 @@ function renderRepos(repos, query, isRegex) {
     const forks = repo.forks_count;
     const lang = repo.language;
     return `
-      <div class="repo-card" data-url="${repo.html_url}" onclick="if(!event.target.closest('.release-tag')){window.open(this.dataset.url,'_blank')}">
+      <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
         <div class="repo-header">
           <div class="repo-name">${name}</div>
           <div class="repo-meta">
@@ -627,7 +627,7 @@ function renderRepos(repos, query, isRegex) {
           ${forks ? `<span>⑂ ${forks}</span>` : ''}
           <span style="margin-left:auto">更新于 ${formatDate(repo.updated_at)}</span>
         </div>
-      </div>`;
+      </a>`;
   }).join('');
 }
 
