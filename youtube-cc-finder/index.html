@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="apple-touch-icon" href="./2048x2048.png"> 
+
+<link rel="icon" type="image/png" sizes="2048x2048" href="./2048x2048.png">
+
+
+<title>YouTube CC字幕视频查找器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 32px;
+    font-size: 14px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+  }
+
+  input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    color: #1a1a1a;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  input:focus { border-color: #3ea6ff; }
+
+  input::placeholder { color: #999; }
+
+  button {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    background: #3ea6ff;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .2s;
+  }
+
+  button:hover { background: #65b8ff; }
+  button:disabled { background: #ddd; color: #999; cursor: not-allowed; }
+
+  .api-key-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .api-key-row input { font-size: 13px; }
+
+  .api-key-hint {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+  }
+
+  .api-key-hint a { color: #3ea6ff; text-decoration: none; }
+
+  .status {
+    text-align: center;
+    padding: 16px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .error {
+    background: #fff5f5;
+    border: 1px solid #e0b4b4;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #cc3333;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .channel-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .channel-info img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+  }
+
+  .channel-info .name { font-size: 18px; font-weight: 600; }
+  .channel-info .stats { font-size: 13px; color: #666; margin-top: 4px; }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .results-header h2 { font-size: 18px; }
+  .results-header span { color: #666; font-size: 14px; }
+
+  .video-list { display: flex; flex-direction: column; gap: 16px; }
+
+  .video-card {
+    display: flex;
+    gap: 16px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: background .2s;
+  }
+
+  .video-card:hover { background: #eaeaea; }
+
+  .video-card .thumb-wrap {
+    flex-shrink: 0;
+    width: 240px;
+    height: 135px;
+    position: relative;
+  }
+
+  .video-card .thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-card .duration {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0,0,0,.8);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+
+  .video-card .info {
+    padding: 12px 12px 12px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .video-card .title {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-card .meta {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+  }
+
+  .video-card .cc-badge {
+    display: inline-block;
+    background: #3ea6ff22;
+    color: #3ea6ff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    width: fit-content;
+  }
+
+  .load-more {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    background: #e8e8e8;
+    color: #1a1a1a;
+  }
+
+  .load-more:hover { background: #ddd; }
+
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-top-color: #3ea6ff;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .video-card { flex-direction: column; }
+    .video-card .thumb-wrap { width: 100%; height: auto; aspect-ratio: 16/9; }
+    .video-card .thumb { width: 100%; height: 100%; }
+    .video-card .info { padding: 12px; }
+    .row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>YouTube CC 字幕视频查找器</h1>
+  <p class="subtitle">输入频道地址，查找所有带 CC 字幕的视频</p>
+
+  <div class="input-group">
+    <div class="api-key-row">
+      <input type="text" id="apiKey" placeholder="输入你的 YouTube Data API Key"
+             autocomplete="off">
+      <button onclick="saveApiKey()" style="padding:12px 16px; font-size:13px;">保存</button>
+    </div>
+    <p class="api-key-hint">
+      需要 YouTube Data API v3 Key，前往
+      <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a>
+      创建（免费额度每天 10,000 单位）
+    </p>
+    <div class="row">
+      <input type="text" id="channelUrl"
+             placeholder="输入频道地址，如 https://www.youtube.com/@ChannelName"
+             onkeydown="if(event.key==='Enter') search()">
+      <button id="searchBtn" onclick="search()">搜索</button>
+    </div>
+  </div>
+
+  <div id="error"></div>
+  <div id="channelInfo"></div>
+  <div id="resultsHeader"></div>
+  <div id="videoList" class="video-list"></div>
+  <div id="loadMore"></div>
+  <div id="status"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let nextPageToken = null;
+let currentChannelId = null;
+let totalFound = 0;
+
+// Load saved API key
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('yt_api_key');
+  if (saved) $('apiKey').value = saved;
+});
+
+function saveApiKey() {
+  localStorage.setItem('yt_api_key', $('apiKey').value.trim());
+  $('apiKey').style.borderColor = '#4caf50';
+  setTimeout(() => $('apiKey').style.borderColor = '', 1000);
+}
+
+function getApiKey() {
+  const key = $('apiKey').value.trim();
+  if (!key) throw new Error('请先输入 API Key');
+  return key;
+}
+
+function showError(msg) {
+  $('error').innerHTML = msg ? `<div class="error">${msg}</div>` : '';
+}
+
+function showStatus(msg) {
+  $('status').innerHTML = msg ? `<div class="status">${msg}</div>` : '';
+}
+
+async function ytApi(endpoint, params) {
+  const key = getApiKey();
+  const qs = new URLSearchParams({ ...params, key });
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/${endpoint}?${qs}`);
+  const data = await res.json();
+  if (data.error) {
+    throw new Error(data.error.message || '接口请求失败');
+  }
+  return data;
+}
+
+// Parse channel URL to get channel ID
+async function resolveChannelId(url) {
+  url = url.trim();
+
+  // 先对 URL 进行解码，处理 %E5%BF%B5 这类编码
+  try { url = decodeURIComponent(url); } catch(e) {}
+
+  // Direct channel ID
+  let m = url.match(/youtube\.com\/channel\/(UC[\w-]+)/);
+  if (m) return m[1];
+
+  // Handle @username（支持中文、日文、韩文等非ASCII字符）
+  m = url.match(/youtube\.com\/@([^\/\?\s]+)/);
+  if (m) {
+    const handle = m[1];
+    // 先尝试用 channels API 的 forHandle 参数
+    try {
+      const data = await ytApi('channels', {
+        part: 'id',
+        forHandle: handle,
+      });
+      if (data.items && data.items.length > 0) {
+        return data.items[0].id;
+      }
+    } catch(e) {}
+    // 回退到搜索
+    const data = await ytApi('search', {
+      part: 'snippet',
+      q: handle,
+      type: 'channel',
+      maxResults: 1,
+    });
+    if (data.items && data.items.length > 0) {
+      return data.items[0].snippet.channelId;
+    }
+    throw new Error(`找不到频道 @${handle}`);
+  }
+
+  // Handle /c/CustomName or /user/Name
+  m = url.match(/youtube\.com\/(?:c|user)\/([^\/\?\s]+)/);
+  if (m) {
+    const data = await ytApi('search', {
+      part: 'snippet',
+      q: m[1],
+      type: 'channel',
+      maxResults: 1,
+    });
+    if (data.items && data.items.length > 0) {
+      return data.items[0].snippet.channelId;
+    }
+    throw new Error(`找不到频道 ${m[1]}`);
+  }
+
+  // Maybe it's just a channel ID or handle
+  if (url.startsWith('UC') && url.length >= 24) return url;
+
+  // Try as handle directly（支持直接输入中文名或 @中文名）
+  const handle = url.startsWith('@') ? url.slice(1) : url;
+  if (handle.length > 0) {
+    try {
+      const data = await ytApi('channels', {
+        part: 'id',
+        forHandle: handle,
+      });
+      if (data.items && data.items.length > 0) {
+        return data.items[0].id;
+      }
+    } catch(e) {}
+    const data = await ytApi('search', {
+      part: 'snippet',
+      q: handle,
+      type: 'channel',
+      maxResults: 1,
+    });
+    if (data.items && data.items.length > 0) {
+      return data.items[0].snippet.channelId;
+    }
+  }
+
+  throw new Error('无法解析频道地址，请输入正确的 YouTube 频道链接');
+}
+
+async function fetchChannelInfo(channelId) {
+  const data = await ytApi('channels', {
+    part: 'snippet,statistics',
+    id: channelId,
+  });
+  if (!data.items || data.items.length === 0) {
+    throw new Error('找不到该频道信息');
+  }
+  return data.items[0];
+}
+
+function renderChannelInfo(channel) {
+  const s = channel.snippet;
+  const stats = channel.statistics;
+  const subs = parseInt(stats.subscriberCount).toLocaleString();
+  const vids = parseInt(stats.videoCount).toLocaleString();
+  $('channelInfo').innerHTML = `
+    <div class="channel-info">
+      <img src="${s.thumbnails.default.url}" alt="${s.title}">
+      <div>
+        <div class="name">${s.title}</div>
+        <div class="stats">${subs} 订阅 · ${vids} 个视频</div>
+      </div>
+    </div>
+  `;
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('zh-CN', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+
+// 将 ISO 8601 时长（PT1H2M3S）转为可读格式
+function formatDuration(iso) {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return '';
+  const h = parseInt(m[1] || 0);
+  const min = parseInt(m[2] || 0);
+  const sec = parseInt(m[3] || 0);
+  if (h > 0) return `${h}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${min}:${String(sec).padStart(2,'0')}`;
+}
+
+// 批量获取视频时长
+async function fetchDurations(videoIds) {
+  const data = await ytApi('videos', {
+    part: 'contentDetails',
+    id: videoIds.join(','),
+  });
+  const map = {};
+  if (data.items) {
+    data.items.forEach(v => { map[v.id] = v.contentDetails.duration; });
+  }
+  return map;
+}
+
+function renderVideo(item, duration) {
+  const s = item.snippet;
+  const videoId = item.id.videoId;
+  const thumb = s.thumbnails.medium?.url || s.thumbnails.default?.url;
+  const durationStr = duration ? formatDuration(duration) : '';
+  return `
+    <a class="video-card" href="https://www.youtube.com/watch?v=${videoId}"
+       target="_blank" rel="noopener">
+      <div class="thumb-wrap">
+        <img class="thumb" src="${thumb}" alt="" loading="lazy">
+        ${durationStr ? `<span class="duration">${durationStr}</span>` : ''}
+      </div>
+      <div class="info">
+        <div class="title">${s.title}</div>
+        <div class="meta">${s.channelTitle} · ${formatDate(s.publishedAt)}</div>
+        <div class="cc-badge">CC 字幕</div>
+      </div>
+    </a>
+  `;
+}
+
+function updateResultsHeader(allLoaded = false) {
+  const suffix = allLoaded ? '' : '+';
+  $('resultsHeader').innerHTML = `
+    <div class="results-header">
+      <h2>有 CC 字幕的视频</h2>
+      <span>共 ${totalFound}${suffix} 个结果${allLoaded ? '' : '（加载更多以查看全部）'}</span>
+    </div>
+  `;
+}
+
+async function searchVideos(channelId, pageToken) {
+  const params = {
+    part: 'snippet',
+    channelId,
+    type: 'video',
+    videoCaption: 'closedCaption',
+    maxResults: 20,
+    order: 'date',
+  };
+  if (pageToken) params.pageToken = pageToken;
+  return ytApi('search', params);
+}
+
+async function search() {
+  const btn = $('searchBtn');
+  showError('');
+  $('channelInfo').innerHTML = '';
+  $('resultsHeader').innerHTML = '';
+  $('videoList').innerHTML = '';
+  $('loadMore').innerHTML = '';
+  nextPageToken = null;
+  currentChannelId = null;
+  totalFound = 0;
+
+  try {
+    btn.disabled = true;
+    showStatus('<span class="spinner"></span>正在解析频道...');
+
+    const channelId = await resolveChannelId($('channelUrl').value);
+    currentChannelId = channelId;
+
+    const channelInfo = await fetchChannelInfo(channelId);
+    renderChannelInfo(channelInfo);
+
+    showStatus('<span class="spinner"></span>正在搜索有 CC 字幕的视频...');
+
+    const data = await searchVideos(channelId);
+    if (!data.items || data.items.length === 0) {
+      showStatus('该频道没有找到带 CC 字幕的视频');
+      return;
+    }
+
+    totalFound = data.items.length;
+    nextPageToken = data.nextPageToken || null;
+    updateResultsHeader();
+
+    const ids = data.items.map(v => v.id.videoId);
+    const durations = await fetchDurations(ids);
+    $('videoList').innerHTML = data.items.map(v => renderVideo(v, durations[v.id.videoId])).join('');
+
+    if (nextPageToken) {
+      $('loadMore').innerHTML =
+        '<button class="load-more" onclick="loadMore()">加载更多</button>';
+    } else {
+      updateResultsHeader(true);
+    }
+
+    showStatus('');
+  } catch (e) {
+    showError(e.message);
+    showStatus('');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function loadMore() {
+  if (!nextPageToken || !currentChannelId) return;
+  const btn = $('loadMore').querySelector('button');
+  if (btn) { btn.disabled = true; btn.textContent = '加载中...'; }
+
+  try {
+    const data = await searchVideos(currentChannelId, nextPageToken);
+    nextPageToken = data.nextPageToken || null;
+
+    if (data.items) {
+      totalFound += data.items.length;
+      const ids = data.items.map(v => v.id.videoId);
+      const durations = await fetchDurations(ids);
+      $('videoList').innerHTML += data.items.map(v => renderVideo(v, durations[v.id.videoId])).join('');
+    }
+
+    if (nextPageToken) {
+      updateResultsHeader(false);
+      $('loadMore').innerHTML =
+        '<button class="load-more" onclick="loadMore()">加载更多</button>';
+    } else {
+      updateResultsHeader(true);
+      $('loadMore').innerHTML = '';
+      showStatus('已加载全部结果');
+    }
+  } catch (e) {
+    showError(e.message);
+    if (btn) { btn.disabled = false; btn.textContent = '加载更多'; }
+  }
+}
+</script>
+</body>
+</html>
