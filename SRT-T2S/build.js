@@ -1,4 +1,4 @@
-// Build a self-contained srt-t2s.html from OpenCC's TSCharacters.txt
+// 基于 OpenCC 的 TSCharacters.txt 构建独立的 srt-t2s.html 文件
 const fs = require('fs');
 const path = require('path');
 
