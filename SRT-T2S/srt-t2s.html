@@ -68,7 +68,16 @@
   .entry { margin: 0 0 16px; padding: 0 0 12px; border-bottom: 1px solid #eee; }
   .entry:last-child { border-bottom: none; }
   .time { font-size: 12px; color: #999; font-family: ui-monospace, Consolas, monospace; margin-bottom: 4px; }
-  .text { font-size: 17px; line-height: 1.75; color: inherit; white-space: pre-wrap; word-break: break-word; }
+  .text { font-size: var(--text-fs, 17px); line-height: 1.75; color: inherit; white-space: pre-wrap; word-break: break-word; }
+  .font-controls { display: flex; gap: 8px; margin-bottom: 8px; }
+  .font-controls button {
+    flex: 1;
+    width: auto;
+    padding: 10px 12px;
+    font-size: 14px;
+    background: #6b7280;
+  }
+  .font-controls button:active:not(:disabled) { background: #4b5563; }
   .toolbar {
     position: fixed;
     left: 0; right: 0; bottom: 0;
@@ -114,6 +123,10 @@
 
   <div class="toolbar" id="toolbar">
     <div class="toolbar-inner">
+      <div class="font-controls">
+        <button id="fontDec" type="button">缩小字体 A−</button>
+        <button id="fontInc" type="button">放大字体 A+</button>
+      </div>
       <button id="download">下载简体 SRT</button>
     </div>
   </div>
@@ -215,6 +228,32 @@ downloadBtn.addEventListener('click', () => {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+});
+
+const FS_KEY = 'srt-t2s-text-fs';
+const FS_MIN = 12;
+const FS_MAX = 40;
+const FS_STEP = 2;
+const FS_DEFAULT = 17;
+let textFontSize = parseInt(localStorage.getItem(FS_KEY), 10);
+if (isNaN(textFontSize)) textFontSize = FS_DEFAULT;
+textFontSize = Math.min(FS_MAX, Math.max(FS_MIN, textFontSize));
+
+function applyFontSize() {
+  document.documentElement.style.setProperty('--text-fs', textFontSize + 'px');
+  try { localStorage.setItem(FS_KEY, String(textFontSize)); } catch (_) {}
+}
+applyFontSize();
+
+document.getElementById('fontInc').addEventListener('click', () => {
+  if (textFontSize >= FS_MAX) return;
+  textFontSize = Math.min(FS_MAX, textFontSize + FS_STEP);
+  applyFontSize();
+});
+document.getElementById('fontDec').addEventListener('click', () => {
+  if (textFontSize <= FS_MIN) return;
+  textFontSize = Math.max(FS_MIN, textFontSize - FS_STEP);
+  applyFontSize();
 });
 </script>
 </body>
