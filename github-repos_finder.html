@@ -613,11 +613,11 @@ function renderRepos(repos, query, isRegex) {
     const forks = repo.forks_count;
     const lang = repo.language;
     return `
-      <div class="repo-card" onclick="window.open('${repo.html_url}', '_blank')">
+      <div class="repo-card" onclick="location.href='${repo.html_url}'">
         <div class="repo-header">
           <div class="repo-name">${name}</div>
           <div class="repo-meta">
-            ${repo.latestRelease ? `<a class="release-tag" href="${escHtml(repo.latestRelease.url)}" target="_blank" rel="noopener" title="${escHtml(repo.latestRelease.name)}" onclick="event.stopPropagation()">🏷️ ${escHtml(repo.latestRelease.name)}</a>` : ''}
+            ${repo.latestRelease ? `<a class="release-tag" href="${escHtml(repo.latestRelease.url)}" rel="noopener" title="${escHtml(repo.latestRelease.name)}" onclick="event.stopPropagation()">🏷️ ${escHtml(repo.latestRelease.name)}</a>` : ''}
             <span class="badge ${repo.private ? 'private' : 'public'}">${repo.private ? '私有' : '公开'}</span>
           </div>
         </div>
