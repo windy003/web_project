@@ -195,6 +195,11 @@ function render(entries) {
   toolbar.classList.add('show');
 }
 
+// 点击字幕时显示/隐藏底部按钮
+reader.addEventListener('click', () => {
+  toolbar.classList.toggle('show');
+});
+
 fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
