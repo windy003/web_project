@@ -107,29 +107,18 @@
         gap: 8px;
         margin-top: 20px;
     }
-    button.primary-button, button.secondary-button{
+    button.primary-button{
         flex: 1;
         padding: 11px 16px;
+        border: none;
         border-radius: 8px;
+        background: var(--primary);
+        color: #fff;
         font: inherit;
         font-weight: 600;
         cursor: pointer;
     }
-    button.primary-button{
-        border: none;
-        background: var(--primary);
-        color: #fff;
-    }
     button.primary-button:active{ background: var(--primary-active); }
-    button.secondary-button{
-        border: 1px solid var(--border);
-        background: transparent;
-        color: var(--text);
-    }
-    button:disabled{
-        opacity: .5;
-        cursor: not-allowed;
-    }
     .message{
         min-height: 22px;
         margin: 16px 0 0;
@@ -188,7 +177,6 @@
 
     <div class="actions">
         <button class="primary-button" id="generateBtn" type="button" onclick="generateRandomTime()">生成随机时间</button>
-        <button class="secondary-button" id="copyBtn" type="button" onclick="copyResult()" disabled>复制</button>
     </div>
 
     <p class="message" id="message" aria-live="polite"></p>
@@ -274,7 +262,6 @@ const messageEl = document.getElementById("message");
 const resultPanel = document.getElementById("resultPanel");
 const resultEl = document.getElementById("result");
 const rangeInfoEl = document.getElementById("rangeInfo");
-const copyBtn = document.getElementById("copyBtn");
 
 // 点击“填入现在”时把当前时刻写进对应输入框
 function fillNow(inputId) {
@@ -294,7 +281,6 @@ function setDefaultValues() {
 function showError(text) {
     messageEl.textContent = text;
     resultPanel.classList.remove("is-visible");
-    copyBtn.disabled = true;
 }
 
 function generateRandomTime() {
@@ -327,32 +313,6 @@ function generateRandomTime() {
         + (crossesMidnight ? "（跨午夜）" : "")
         + "（共 " + formatDuration(rangeEnd - startMinutes) + "）";
     resultPanel.classList.add("is-visible");
-    copyBtn.disabled = false;
-}
-
-async function copyResult() {
-    const text = resultEl.textContent;
-    if (!text || text === "—") return;
-
-    try {
-        await navigator.clipboard.writeText(text);
-    } catch (error) {
-        // 部分浏览器（如非安全上下文）不支持剪贴板 API，退回旧方法
-        const tempBox = document.createElement("textarea");
-        tempBox.value = text;
-        tempBox.style.position = "fixed";
-        tempBox.style.opacity = "0";
-        document.body.appendChild(tempBox);
-        tempBox.select();
-        document.execCommand("copy");
-        document.body.removeChild(tempBox);
-    }
-
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = "已复制";
-    setTimeout(function () {
-        copyBtn.textContent = originalText;
-    }, 1200);
 }
 
 [startInput, endInput].forEach(function (input) {
