@@ -211,9 +211,10 @@ function pad2(number) {
     return String(number).padStart(2, "0");
 }
 
-// 把“从午夜起的分钟数”格式化为 "HH:mm"，支持跨午夜时超过一天的值
+// 把“从午夜起的分钟数”格式化为 "HH:mm"
+// 传入值不会为负，跨午夜时可能超过一天，取模即可
 function formatClock(minutes) {
-    const value = ((minutes % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+    const value = minutes % MINUTES_PER_DAY;
     return pad2(Math.floor(value / 60)) + ":" + pad2(value % 60);
 }
 
